@@ -10,9 +10,9 @@ func main() {
   /* 调用函数并返回最大值 */
   maxValue := max(a, b)
 
-  fmt.Printf( "最大值是 : %d", maxValue )
+  fmt.Println( "最大值是 : %d", maxValue )
   c, d := swapNumber(a, b)
-  fmt.Printf( "输入a = %d, 输入b = %d, 输出 a = %d, b = %d", a, b, c, d )
+  fmt.Println( "输入a = %d, 输入b = %d, 输出 a = %d, b = %d", a, b, c, d )
 }
 
 /* 函数返回两个数的最大值 */
