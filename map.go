@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-  var countryCapitalMap map[string]string
+	var countryCapitalMap map[string]string
 	/* 创建集合 */
 	countryCapitalMap = make(map[string]string)
 
