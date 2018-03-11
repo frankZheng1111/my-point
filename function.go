@@ -13,6 +13,16 @@ func main() {
 	fmt.Println("最大值是 : %d", maxValue)
 	c, d := swapNumber(a, b)
 	fmt.Println("输入a = %d, 输入b = %d, 输出 a = %d, b = %d", a, b, c, d)
+
+	testDefer()
+}
+
+func testDefer() {
+	fmt.Println("start test defer")
+	for i := 0; i < 5; i++ {
+		fmt.Println("i = ", i)
+		defer fmt.Println("defer i = ", i) // 多个推迟执行的函数后进先出
+	}
 }
 
 /* 函数返回两个数的最大值 */
