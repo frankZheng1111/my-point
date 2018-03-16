@@ -30,8 +30,18 @@ func main() {
 	number3 := numbers[2:5]
 	printSlice(number3)
 
+	// 切片保存了对底层数组的引用，若你将某个切片赋予另一个切片，它们会引用同一个数组。
+	// 若某个函数将一个切片作为参数传入，则它对该切片元素的修改对调用者而言同样可见， 这
+	// 可以理解为传递了底层数组的指针。
+	updateSlice(number3)
+	fmt.Println("src number3[1]=", number3[1])
+
 }
 
 func printSlice(x []int) {
 	fmt.Printf("len=%d cap=%d slice=%v\n", len(x), cap(x), x)
+}
+
+func updateSlice(x []int) {
+	x[1] = 1000
 }
