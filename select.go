@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-  var c1 = make(chan int, 1)
+  var c1 = make(chan int, 1) // 单个元素不超过65535个字节
   var c2 = make(chan int, 1)
   var c3 = make(chan int, 2)
   var i1, i2 int
