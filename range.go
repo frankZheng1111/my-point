@@ -25,4 +25,14 @@ func main() {
 	for i, c := range "go" {
 		fmt.Println(i, c)
 	}
+
+  ILoop:
+  for i := 0; i<3; i++ {
+    for j := 0; j<4; j++ {
+      fmt.Println("i", i, "j", j );
+      // break ILoop //中断外层标签
+      // continue ILoop
+    }
+  }
 }
+
