@@ -1,28 +1,28 @@
 package main
 
 import (
-  "fmt"
-  "runtime"
-  "sync"
+	"fmt"
+	"runtime"
+	"sync"
 )
 
 func main() {
-  runtime.GOMAXPROCS(1)
-  wg := sync.WaitGroup{}
-  wg.Add(20)
-  for i := 0; i < 10; i++ {
-    go func() {
-      fmt.Println("i: ", i)
-      wg.Done()
-    }()
-  }
-  for i := 0; i < 10; i++ {
-    go func(i int) {
-      fmt.Println("i2: ", i)
-      wg.Done()
-    }(i)
-  }
-  wg.Wait()
+	runtime.GOMAXPROCS(1)
+	wg := sync.WaitGroup{}
+	wg.Add(20)
+	for i := 0; i < 10; i++ {
+		go func() {
+			fmt.Println("i: ", i)
+			wg.Done()
+		}()
+	}
+	for i := 0; i < 10; i++ {
+		go func(i int) {
+			fmt.Println("i2: ", i)
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
 }
 
 // 将GOMAXPROCS设置为1，将影响goroutine的并发，后续代码中的go func()相当于串行执行。

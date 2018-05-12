@@ -15,7 +15,7 @@ func main() {
 	printSlice(numbers)
 
 	/* 同时添加多个元素 */
-	numbers = append(numbers, 2, 3, 4) 
+	numbers = append(numbers, 2, 3, 4)
 	printSlice(numbers)
 
 	/* 创建切片 numbers1 是之前切片的两倍容量*/
