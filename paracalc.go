@@ -26,3 +26,7 @@ func main() {
 	fmt.Println("Sum2:", sum2)
 	fmt.Println("Sum:", sum1+sum2)
 }
+
+// ch := make(chan interface{}) 和 ch := make(chan interface{},1)是不一样的
+// 无缓冲的 不仅仅是只能向 ch 通道放 一个值 而是一直要有人接收，那么ch <- elem才会继续下去，要不然就一直阻塞着，也就是说有接收者才去放，没有接收者就阻塞。
+// 而缓冲为1则即使没有接收者也不会阻塞，因为缓冲大小是1只有当 放第二个值的时候 第一个还没被人拿走，这时候才会阻塞 
