@@ -24,16 +24,15 @@ func reverseListIteratively(head *ListNode) *ListNode {
   return newListNode
 }
 
-var newHead *ListNode
-func reverseListRecursively(head *ListNode) *ListNode {
+func reverseListRecursively(head, newHead *ListNode) (*ListNode, *ListNode) {
   if (head.Next == nil) {
     newHead = head
-    return head
+    return head, newHead
   }
-  node := reverseListRecursively(head.Next)
+  node, newHead := reverseListRecursively(head.Next, newHead)
   node.Next = head
   head.Next = nil
-  return head
+  return head, newHead
 }
 
 func printList(head *ListNode) {
@@ -56,8 +55,8 @@ func main() {
   reverseHead := *reverseListIteratively(&head)
   printList(&reverseHead)
   fmt.Println("翻转后(递归翻转):")
-  reverseListRecursively(&reverseHead)
-  printList(newHead)
+  _, reReverseHead := reverseListRecursively(&reverseHead, nil)
+  printList(reReverseHead)
 }
 
 
