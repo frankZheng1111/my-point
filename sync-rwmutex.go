@@ -1,9 +1,9 @@
 package main
 
 import (
-  "fmt"
-  "sync"
-  "runtime"
+	"fmt"
+	"runtime"
+	"sync"
 )
 
 var count int
@@ -19,32 +19,32 @@ var wg sync.WaitGroup
 
 func main() {
 	runtime.GOMAXPROCS(2)
-  wg = sync.WaitGroup{}
-  wg.Add(10)
-  for i := 0; i < 5; i++ {
-    go read(i)
-  }
-  for i := 0; i < 5; i++ {
-    go write(i)
-  }
-  wg.Wait()
+	wg = sync.WaitGroup{}
+	wg.Add(10)
+	for i := 0; i < 5; i++ {
+		go read(i)
+	}
+	for i := 0; i < 5; i++ {
+		go write(i)
+	}
+	wg.Wait()
 }
 
 func read(n int) {
-  rw.RLock()
-  fmt.Printf("goroutine %d 进入读操作...\n", n)
-  v := count
-  fmt.Printf("goroutine %d 读取结束，值为：%d\n", n, v)
-  rw.RUnlock()
-  wg.Done()
+	rw.RLock()
+	fmt.Printf("goroutine %d 进入读操作...\n", n)
+	v := count
+	fmt.Printf("goroutine %d 读取结束，值为：%d\n", n, v)
+	rw.RUnlock()
+	wg.Done()
 }
 
 func write(n int) {
-  rw.Lock()
-  fmt.Printf("goroutine %d 进入写操作...\n", n)
-  count ++
-  v := count
-  fmt.Printf("goroutine %d 写入结束，新值为：%d\n", n, v)
-  rw.Unlock()
-  wg.Done()
+	rw.Lock()
+	fmt.Printf("goroutine %d 进入写操作...\n", n)
+	count++
+	v := count
+	fmt.Printf("goroutine %d 写入结束，新值为：%d\n", n, v)
+	rw.Unlock()
+	wg.Done()
 }
