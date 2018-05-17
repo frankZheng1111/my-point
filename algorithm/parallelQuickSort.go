@@ -4,7 +4,6 @@ import (
   "fmt"
   "math/rand"
   "sync"
-  "time"
 )
 
 func main() {
@@ -18,17 +17,12 @@ func main() {
 }
 // 将切片中某一段的值(head <= index <= tail)按照某一个基准点，左右划分，并排序，并返回基准点的index
 func partition (values []int, head int, tail int, resultChan chan int) {
-  time.Sleep(time.Second/2) // 用于区分
   baseValIndex := rand.Intn(tail - head) + head
-  // fmt.Println("head", head)
-  // fmt.Println("tail", tail)
-  baseVal, i := values[baseValIndex], head // i为遍历游标
+  // i为遍历游标, 最好是标准坐标右边第一个坐标，为了遍历所有的同时简化循环体，将标准坐标交换至第一个位置
+  baseVal, i := values[baseValIndex], head + 1
+  values[baseValIndex], values[head] = values[head], values[baseValIndex]
 
   for head < tail {
-    if (i == baseValIndex) {
-      i ++
-      continue
-    }
     if values[i] > baseVal {
       // 把比标准值大的位数放在最后, 同时左移尾标标记该外侧值经过确认
       values[i], values[tail] = values[tail], values[i]
@@ -52,26 +46,28 @@ func QuickSortIteratively(values []int) {
   var indexsStack = []struct{ head, tail int }{ { 0, length - 1 } }
   wg := sync.WaitGroup{}
   for len(indexsStack) > 0 {
-    wg.Add(len(indexsStack))
-    // fmt.Println("add", indexsStack)
-    for len(indexsStack) > 0 {
+    indexsGroup := make([]struct{ head, tail int }, len(indexsStack))
+    copy(indexsGroup, indexsStack)
+    indexsStack = []struct{ head, tail int }{}
+
+    wg.Add(len(indexsGroup))
+    for len(indexsGroup) > 0 {
       var indexs struct{ head, tail int }
-      indexs, indexsStack = indexsStack[len(indexsStack) - 1], indexsStack[:(len(indexsStack) - 1)]
+      indexs, indexsGroup = indexsGroup[len(indexsGroup) - 1], indexsGroup[:(len(indexsGroup) - 1)]
       go func (indexs struct{ head, tail int }) {
         resultChan := make(chan int, 1)
         partition(values, indexs.head, indexs.tail, resultChan)
         partitionIndex := <-resultChan
         if partitionIndex - indexs.head > 1 {
           indexsStack = append(indexsStack, struct{ head, tail int }{ indexs.head, partitionIndex - 1 })
-          // fmt.Println("left")
         }
         if indexs.tail - partitionIndex > 1 {
           indexsStack = append(indexsStack, struct{ head, tail int }{ partitionIndex + 1, indexs.tail })
-          // fmt.Println("right")
         }
         wg.Done()
       }(indexs)
     }
+
     wg.Wait()
   }
 }
@@ -97,7 +93,6 @@ func QuickSortRecursively(values []int) {
     wg.Done()
   }
 
-  go recursiveFunc(values)
+  recursiveFunc(values)
   wg.Wait()
-
 }
