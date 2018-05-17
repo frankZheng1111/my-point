@@ -6,24 +6,23 @@ import (
 )
 
 func main() {
-  numbers1 := []int{6, 2, 7, 7, 3, 8, 9}
-  numbers2 := []int{6, 2, 7, 7, 3, 8, 9}
+  numbers1 := []int{6, 2, 7, 7, 3, 8, 9, 10,45,31,34,567,1,0,7,23,1,45,33,6}
   QuickSortIteratively(numbers1)
-  QuickSortRecursively(numbers2)
-
   fmt.Println(numbers1)
+
+  numbers2 := []int{6, 2, 7, 7, 3, 8, 9, 10,45,31,34,567,1,0,7,23,1,45,33,6}
+  QuickSortRecursively(numbers2)
   fmt.Println(numbers2)
 }
+
 // 将切片中某一段的值(head <= index <= tail)按照某一个基准点，左右划分，并排序，并返回基准点的index
 func partition (values []int, head int, tail int) int {
   baseValIndex := rand.Intn(tail - head) + head
-  baseVal, i := values[baseValIndex], head // i为遍历游标
+  // i为遍历游标, 最好是标准坐标右边第一个坐标，为了遍历所有的同时简化循环体，将标准坐标交换至第一个位置
+  baseVal, i := values[baseValIndex], head + 1
+  values[baseValIndex], values[head] = values[head], values[baseValIndex]
 
   for head < tail {
-    if (i == baseValIndex) {
-      i ++
-      continue
-    }
     if values[i] > baseVal {
       // 把比标准值大的位数放在最后, 同时左移尾标标记该外侧值经过确认
       values[i], values[tail] = values[tail], values[i]
