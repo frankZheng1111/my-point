@@ -26,13 +26,55 @@ func getClimbingWay(totalStep int) (resultWay int) {
   last2StepWay := 1 // W(1)
   for i:= 3; i<=totalStep; i++ {
     resultWay = last1StepWay + last2StepWay
-    fmt.Println(i, resultWay, last1StepWay, last2StepWay)
     last2StepWay = last1StepWay
     last1StepWay = resultWay
   }
   return
 }
 
+func getMaxGold(workerNum int) (maxGold int) {
+  type Gold struct {
+    reserve int
+    needWorker int
+  }
+  var GOLDS = []Gold{
+    { 500, 5 },
+    { 200, 3 },
+    { 350, 3 },
+    { 300, 4 },
+    { 400, 5 },
+  }
+  // F(1,10) = GOLDS[1].reserve ( GOLDS[1].needWorker <= 10 ) || 0
+  // F(2,10) = MAX( F(1,10), F(1,10-GOLDS[2].needWorker) + GOLDS[2].reserve )
+
+  Max := func(x, y int) int {
+    if x > y { return x }
+    return y
+  }
+
+  var maxGoldCal func (golds []Gold, workerNum int) int
+  maxGoldCal = func(golds []Gold, workerNum int) int {
+    length := len(golds)
+    if length == 0 {
+      return 0;
+    } else if length == 1 {
+      maxGold := golds[0].reserve
+      if (workerNum < GOLDS[0].needWorker) { maxGold = 0 }
+      return maxGold
+    } else {
+      if workerNum >= golds[length - 1].needWorker {
+        return Max(maxGoldCal(golds[:length - 1], workerNum), maxGoldCal(golds[:length - 1], workerNum - golds[length - 1].needWorker) + golds[length - 1].reserve)
+      } else {
+        return maxGoldCal(golds[:length - 1], workerNum)
+      }
+    }
+  }
+  maxGold = maxGoldCal(GOLDS, workerNum)
+
+  return
+}
+
 func main() {
-  fmt.Println("总10格楼梯，最多一次跨2格，几种走法: ", getClimbingWay(10))
+  fmt.Println("总10格楼梯，最多一次跨2格，几种走法 ", getClimbingWay(10))
+  fmt.Println("国王金矿问题, 10名工人最多挖多少金矿: ", getMaxGold(10))
 }
