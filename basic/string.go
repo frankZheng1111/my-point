@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"unicode/utf8"
 )
 
 func main() {
@@ -31,4 +32,12 @@ func main() {
 	for i := 0; i < len(r); i++ {
 		fmt.Println("r[", i, "]=", r[i], "string=", string(r[i]))
 	}
+
+	// Strings Are Not Always UTF8 Text
+
+	data1 := "ABC"
+	fmt.Println(utf8.ValidString(data1)) //prints: true
+
+	data2 := "A\xfeC"
+	fmt.Println(utf8.ValidString(data2)) //prints: false
 }
