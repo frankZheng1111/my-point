@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"unicode/utf8"
+  "unicode/utf8"
 )
 
 func main() {
@@ -31,13 +31,17 @@ func main() {
 	fmt.Println("rune=", r)
 	for i := 0; i < len(r); i++ {
 		fmt.Println("r[", i, "]=", r[i], "string=", string(r[i]))
-	}
+  }
 
-	// Strings Are Not Always UTF8 Text
+  data := "♥"
+  fmt.Println(len(data)) //prints: 1
+  fmt.Println(utf8.RuneCountInString(data)) //prints: 1
 
-	data1 := "ABC"
-	fmt.Println(utf8.ValidString(data1)) //prints: true
+  // Strings Are Not Always UTF8 Text
 
-	data2 := "A\xfeC"
-	fmt.Println(utf8.ValidString(data2)) //prints: false
+  data1 := "ABC"
+  fmt.Println(utf8.ValidString(data1)) //prints: true
+
+  data2 := "A\xfeC"
+  fmt.Println(utf8.ValidString(data2)) //prints: false
 }
