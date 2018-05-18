@@ -10,7 +10,7 @@ func main() {
 	numbers = append(numbers, 0) // 类似push
 	printSlice(numbers)
 
-  /* 向切片添加一个元素, ps: 不修改原切片*/
+	/* 向切片添加一个元素, ps: 不修改原切片*/
 	numbers = append(numbers, 1)
 	printSlice(numbers)
 
