@@ -10,7 +10,7 @@ func main() {
 
 	ch := str[0] //获取第一个字符 string[index]获取的是字符byte
 	fmt.Println("str[0] 输出", ch)
-	fmt.Println("str[0] 输出", ch)
+	fmt.Printf("%c\n", ch)
 
 	strLen := len(str) //字符串的长度,len是内置函数 ,len=5
 	fmt.Println("str 的长度是", strLen)
