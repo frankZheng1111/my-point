@@ -28,7 +28,7 @@ func main() {
 	phone = new(NokiaPhone)
 	phone.call()
 
-	phone = new(IPhone)
+	phone = &IPhone{}
 	phone.call()
 
 }
