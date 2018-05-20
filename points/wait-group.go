@@ -6,18 +6,26 @@ import (
 	"sync"
 )
 
+func onceFunc() {
+  fmt.Println("YOu will see this only once")
+}
+
 func main() {
 	runtime.GOMAXPROCS(1)
-	wg := sync.WaitGroup{}
+	// wg := sync.WaitGroup{} // 初始化方式都行
+	var wg sync.WaitGroup
 	wg.Add(20)
+  once := sync.Once{}
 	for i := 0; i < 10; i++ {
 		go func() {
+      once.Do(onceFunc)
 			fmt.Println("i: ", i)
 			wg.Done()
 		}()
 	}
 	for i := 0; i < 10; i++ {
 		go func(i int) {
+
 			fmt.Println("i2: ", i)
 			wg.Done()
 		}(i)
