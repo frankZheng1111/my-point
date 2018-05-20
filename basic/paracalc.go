@@ -2,15 +2,15 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"time"
-  "runtime"
 )
 
 // 不定参数，语法糖，只能作为参数最后一个
 func sum(resultChan chan int, values ...int) {
 	sum := 0
 	for _, value := range values {
-		time.Sleep(time.Second/2)
+		time.Sleep(time.Second / 2)
 		sum += value
 	}
 	resultChan <- sum //将计算结果·发送到channel中
@@ -18,7 +18,7 @@ func sum(resultChan chan int, values ...int) {
 
 func main() {
 	values := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	fmt.Println(values[2:4]) // （2<= index < 4）
+	fmt.Println(values[2:4])      // （2<= index < 4）
 	fmt.Println(runtime.NumCPU()) // （2<= index < 4）
 	resultChan := make(chan int, 2)
 	go sum(resultChan, values[:len(values)/2]...)
