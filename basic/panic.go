@@ -15,9 +15,13 @@ func main() {
 
 func f() {
 	fmt.Println("a")
-	panic(55)
+  causePanic()
 	fmt.Println("b")
 	fmt.Println("f")
+}
+
+func causePanic() {
+	panic(55)
 }
 
 // panic 是用来表示非常严重的不可恢复的错误的。在Go语言中这是一个内置函数，接收一个interface{}类型的值（也就是任何值了）作为参数。panic的作用就像我们平常接触的异常。不过Go可没有try…catch，所以，panic一般会导致程序挂掉（除非recover）。所以，Go语言中的异常，那真的是异常了。你可以试试，调用panic看看，程序立马挂掉，然后Go运行时会打印出调用栈。
