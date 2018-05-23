@@ -15,7 +15,7 @@ func main() {
 
 func f() {
 	fmt.Println("a")
-  causePanic()
+	causePanic()
 	fmt.Println("b")
 	fmt.Println("f")
 }
