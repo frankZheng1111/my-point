@@ -4,8 +4,14 @@ import "fmt"
 
 func main() {
 	var countryCapitalMap map[string]string
+	fmt.Println(countryCapitalMap, countryCapitalMap == nil) // map[] true
 	/* 创建集合 */
-	countryCapitalMap = make(map[string]string)
+	// 分配内存，否则赋值会panic
+	countryCapitalMap = make(map[string]string) // 可以
+	// countryCapitalMap = map[string]string{} // 可以
+	// countryCapitalMap = *new(map[string]string) //不行, new会分配初值，依旧是nil
+
+	fmt.Println(countryCapitalMap, countryCapitalMap == nil) // map[] false
 
 	/* map 插入 key-value 对，各个国家对应的首都 */
 	countryCapitalMap["France"] = "Paris"
