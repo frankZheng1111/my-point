@@ -24,4 +24,6 @@ func main() {
 	}
 
 	fmt.Println(reflect.ValueOf(s).FieldByName("F"))
+	reflect.ValueOf(&s).Elem().Field(1).Set(reflect.ValueOf("1111"))
+	fmt.Println(reflect.ValueOf(&s).Elem().FieldByName("F2"))
 }
