@@ -41,6 +41,7 @@ func handleConnection(conn net.Conn) {
 		// Step3: ReadBuffer
 		//
 		n, err := conn.Read(buffer)
+		conn.Write([]byte("I got it"))
 
 		if err != nil {
 			Log(conn.RemoteAddr().String(), " connection error: ", err)

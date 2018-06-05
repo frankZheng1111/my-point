@@ -8,8 +8,17 @@ import (
 
 func sender(conn net.Conn) {
 	words := "hello world!"
+	buffer := make([]byte, 2048)
 	conn.Write([]byte(words))
 	fmt.Println("send over")
+
+	n, err := conn.Read(buffer)
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(conn.RemoteAddr().String(), "receive data string:\n", string(buffer[:n]))
 
 }
 
