@@ -3,6 +3,8 @@ package main
 import "fmt"
 
 func main() {
+	var nilSlice []int           // nil
+	fmt.Println(nilSlice == nil) //true
 	/* 创建切片 */
 	numbers := []int{0, 1, 2, 3, 4, 5, 6, 7, 8}
 	printSlice(numbers)
