@@ -14,6 +14,7 @@ func main() {
 	makeSlice := make([]int, 1)
 	fmt.Println(len(makeSlice), cap(makeSlice)) // 1, 1
 	initSlice := []int{}
+	fmt.Println(initSlice == nil)               // false
 	fmt.Println(len(initSlice), cap(initSlice)) // 0, 0
 
 	/* 创建切片 */
