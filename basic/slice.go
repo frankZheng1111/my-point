@@ -3,8 +3,19 @@ package main
 import "fmt"
 
 func main() {
+
 	var nilSlice []int           // nil
 	fmt.Println(nilSlice == nil) //true
+	// fmt.Println(len(nil))        // panic: use of untyped nil
+	fmt.Println(len(nilSlice), cap(nilSlice)) // 0, 0
+	nilSlice = append(nilSlice, 1)
+	fmt.Println(len(nilSlice), cap(nilSlice)) // 1, 1
+	// makeSlice := make([]int)//  panic: missing len argument to make([]int)
+	makeSlice := make([]int, 1)
+	fmt.Println(len(makeSlice), cap(makeSlice)) // 1, 1
+	initSlice := []int{}
+	fmt.Println(len(initSlice), cap(initSlice)) // 0, 0
+
 	/* 创建切片 */
 	numbers := []int{0, 1, 2, 3, 4, 5, 6, 7, 8}
 	printSlice(numbers)
