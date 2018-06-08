@@ -3,6 +3,11 @@ package main
 import "fmt"
 
 func main() {
+	var a map[string]int
+	a = make(map[string]int)
+	a["test"]++
+	fmt.Println(a) // {test:1}
+
 	var countryCapitalMap map[string]string
 	fmt.Println(countryCapitalMap, countryCapitalMap == nil) // map[] true
 	/* 创建集合 */
