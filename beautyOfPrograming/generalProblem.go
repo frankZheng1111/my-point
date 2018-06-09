@@ -22,7 +22,7 @@ func GeneralProblem() {
 
 func GeneralProblemWithOneByte() {
 	var count byte
-	for count = 1; count <= 81; count++ {
+	for count = 0; count < 81; count++ {
 		// 此为上述方法的展开
 		// 等式两边的count/9 + 1与 count%9 + 1 两边分别遍历了0+1 ~ 8+1 与 0+1 ~ 8+1
 		if (count/9+1)%3 != (count%9+1)%3 {
