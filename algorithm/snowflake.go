@@ -40,7 +40,7 @@ func (snowFlake *SnowFlake) GenerateId() interface{} {
 	snowFlake.CurrentId++
 	snowFlake.Sm.Unlock()
 	fmt.Println(IdStr)
-	Id, _ := strconv.ParseInt(IdStr, 2, 10)
+	Id, _ := strconv.ParseInt(IdStr, 2, 64)
 	return Id
 }
 
