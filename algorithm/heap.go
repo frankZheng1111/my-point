@@ -23,29 +23,26 @@ func PrintHeap(node *HeapNode) {
 	}
 }
 
-func main() {
-	node := &HeapNode{
-		Val: 1,
-		Left: &HeapNode{
-			Val: 2,
-			Left: &HeapNode{
-				Val: 3,
-			},
-			Right: &HeapNode{
-				Val: 4,
-			},
-		},
-		Right: &HeapNode{
-			Val: 5,
-			Left: &HeapNode{
-				Val: 6,
-			},
-			Right: &HeapNode{
-				Val: 7,
-			},
-		},
+func BuildCompleteBinaryTree(rawData []int) *HeapNode {
+	tmpNodes := make([]*HeapNode, len(rawData))
+	for index, data := range rawData {
+		tmpNodes[index] = &HeapNode{
+			Val: data,
+		}
+		if index != 0 {
+			fatherIndex := index - index/2 - 1
+			if tmpNodes[fatherIndex].Left == nil {
+				tmpNodes[fatherIndex].Left = tmpNodes[index]
+			} else if tmpNodes[fatherIndex].Right == nil {
+				tmpNodes[fatherIndex].Right = tmpNodes[index]
+			}
+		}
 	}
-	fmt.Println("原堆: ")
+	return tmpNodes[0]
+}
+
+func main() {
+	rawData := []int{9, 8, 7, 6, 5, 4, 3, 2, 1}
+	node := BuildCompleteBinaryTree(rawData)
 	PrintHeap(node)
-	fmt.Println("")
 }
