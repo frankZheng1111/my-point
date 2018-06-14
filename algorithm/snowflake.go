@@ -31,13 +31,13 @@ func FixedLengthBinaryString(num int64, length int) string {
 	return result
 }
 
-func (snowFlake *SnowFlake) CurrentTimestamp() int64 {
-	return time.Now().UnixNano() / int64(TIME_UNIT/time.Nanosecond)
+func (snowFlake *SnowFlake) ParseToTimestamp(times time.Time) int64 {
+	return times.UnixNano() / int64(TIME_UNIT/time.Nanosecond)
 }
 
 func (snowFlake *SnowFlake) GenerateId() int64 {
 	snowFlake.Sm.Lock()
-	currentTimestamp := snowFlake.CurrentTimestamp() - snowFlake.StartTimestamp
+	currentTimestamp := snowFlake.ParseToTimestamp(time.Now()) - snowFlake.StartTimestamp
 	if snowFlake.LastTimestamp != currentTimestamp {
 		snowFlake.LastTimestamp = currentTimestamp
 		snowFlake.CurrentId = 0
@@ -57,10 +57,16 @@ func (snowFlake *SnowFlake) GenerateId() int64 {
 }
 
 func main() {
+	timeStr := "2018-06-14T9:09:26.371Z"
+	times, err := time.Parse(time.RFC3339, timeStr)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(times)
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	wg := sync.WaitGroup{}
 	snowFlake := new(SnowFlake)
-	snowFlake.StartTimestamp = snowFlake.CurrentTimestamp()
+	snowFlake.StartTimestamp = snowFlake.ParseToTimestamp(times)
 	snowFlake.DataCenterId = 0
 	snowFlake.WorkerId = 0
 	wg.Add(5000)
