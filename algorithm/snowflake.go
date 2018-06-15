@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"runtime"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -21,14 +20,6 @@ type SnowFlake struct {
 	DataCenterId   int64
 	WorkerId       int64
 	LastTimestamp  int64
-}
-
-func FixedLengthBinaryString(num int64, length int) string {
-	result := strconv.FormatInt(num, 2)
-	for len(result) < length {
-		result = "0" + result
-	}
-	return result
 }
 
 func (snowFlake *SnowFlake) ParseToTimestamp(times time.Time) int64 {
