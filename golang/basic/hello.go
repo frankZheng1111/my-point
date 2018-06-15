@@ -3,6 +3,8 @@ package main
 import "fmt"
 
 func main() {
+	// var a int = 1<<63 - 1 // 64位机上为int64
+	// var a int = 1<<31 - 1 // 32位机上为int32
 	// comment1
 	fmt.Println("Hello, World!")
 	/*
