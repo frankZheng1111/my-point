@@ -17,6 +17,7 @@ c7: 上一条逆向转
 ps: 关于named类型 和 unamed类型和Underlying类型
 - int，int32, type 定义的类型属于named type, 只有named类型可以作为方法的接受者
 - []int,  struct{} map[string]int属于unnamedType
+- []B的底层类型是[]B, type A string的底层类型是string string类型的底层类型是string
 - 两个底层类型相同的变量可以赋值的条件至少有一个不是unamed变量
 
 */
