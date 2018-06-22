@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,7 +19,7 @@ func DownloadFile(filePath string, url string) (err error) {
 		return
 	}
 	defer resp.Body.Close()
-	n, err := io.Copy(out, resp.Body)
+	n, err := io.Copy(out, resp.Body) // n是size
 	fmt.Println(n)
 	if err != nil {
 		return
@@ -27,6 +28,17 @@ func DownloadFile(filePath string, url string) (err error) {
 }
 
 func main() {
-	err := DownloadFile("path", "url")
-	fmt.Println(err)
+	var path, url string
+	// 两种解析方式
+	// 直接赋值
+	flag.StringVar(&path, "path", "default", "file path with name")
+	// 返回指针
+	urlPtr := flag.String("url", "default", "download url")
+	flag.Parse()
+	url = *urlPtr
+	err := DownloadFile(path, url)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Download Success")
 }
