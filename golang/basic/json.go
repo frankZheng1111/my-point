@@ -3,7 +3,9 @@
 	https://stackoverflow.com/questions/21197239/decoding-json-in-golang-using-json-unmarshal-vs-json-newdecoder-decode
 
 	Use json.Decoder if your data is coming from an io.Reader stream, or you need to decode multiple values from a stream of data.
+	参数是io.Reader(stream), 适合从文件读stream的场景
 	Use json.Unmarshal if you already have the JSON data in memory.
+	参数是byte[](buf)适用已经在内存里的场景
 */
 package main
 
