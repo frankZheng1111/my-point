@@ -1,3 +1,15 @@
+/*
+ * 要点
+ * 下载文件
+ * 创建文件os.Create(返回*File, 有实现writer接口) 记defer关闭文件
+ * 写入文件io.Copy(返回参数1需实现有实现writer接口) 记defer关闭文件
+ *
+ * flag 通常有两种使用方法
+ * flag.String(flag名称，默认值，提示内容) 返回指针
+ * flag.StringVar(需要赋值变量的地址， flag名称，默认值，提示内容)
+ *
+
+ */
 package main
 
 import (
