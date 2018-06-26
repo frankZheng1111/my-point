@@ -9,6 +9,7 @@ type Phone interface {
 }
 
 type NokiaPhone struct {
+	name string
 }
 
 func (nokiaPhone NokiaPhone) call() {
@@ -26,6 +27,7 @@ func main() {
 	var phone Phone
 
 	phone = new(NokiaPhone)
+	// fmt.Println(phone.name) // hone.name undefined (type Phone has no field or method name)
 	phone.call()
 
 	phone = &IPhone{}
