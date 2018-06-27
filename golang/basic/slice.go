@@ -1,5 +1,7 @@
 package main
 
+// https://halfrost.com/go_slice/
+
 import "fmt"
 
 func main() {
