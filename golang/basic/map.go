@@ -1,5 +1,7 @@
 package main
 
+// map 底层实现有指针指向相应的bucket，键值对存在bucket内，也就是赋值或传参后作响应修改会影响值的原因
+
 import "fmt"
 
 func main() {
