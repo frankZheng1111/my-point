@@ -2,10 +2,12 @@ package main
 
 import "fmt"
 
-type People struct{}
+type People struct {
+	name string
+}
 
 func (p *People) ShowA() {
-	fmt.Println("showA")
+	fmt.Println("showA", p.name)
 	p.ShowB()
 }
 func (p *People) ShowB() {
@@ -14,6 +16,7 @@ func (p *People) ShowB() {
 
 type Teacher struct {
 	People
+	name string
 }
 
 func (t *Teacher) ShowB() {
@@ -21,6 +24,7 @@ func (t *Teacher) ShowB() {
 }
 func main() {
 	t := Teacher{}
+	t.name = "a"
 	t.ShowA()
 }
 
