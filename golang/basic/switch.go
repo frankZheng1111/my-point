@@ -12,6 +12,8 @@ func compare(a, b []byte) int {
 		}
 	}
 	switch {
+	case len(a) == len(b):
+		fallthrough
 	case len(a) > len(b):
 		return 1
 	case len(a) < len(b):
