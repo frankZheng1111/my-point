@@ -18,7 +18,8 @@ func main() {
 	var args = struct{ A, B int }{40, 3}
 	var result int
 	fmt.Println("开始调用！")
-	err = client.Call("Arith.Multiply", args, &result) // 同步调用
+	err = client.Call("Arith.Multiply", &args, &result) // 同步调用
+	fmt.Println("args", args)
 	if err != nil {
 		fmt.Println("调用失败！", err)
 	}

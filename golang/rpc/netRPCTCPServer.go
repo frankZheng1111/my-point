@@ -36,6 +36,7 @@ type Arith struct {
 
 func (t *Arith) Multiply(args *Args, reply *int) error {
 	*reply = args.A * args.B
+	args.A = 30 // 修改不会映射到原参数
 	return nil
 }
 func (t *Arith) Divide(args *Args, quo *Quotient) error {
