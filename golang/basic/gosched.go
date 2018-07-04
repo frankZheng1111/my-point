@@ -27,7 +27,7 @@ func wait(wg *sync.WaitGroup, id int) {
 	num += 2 - id
 	if id > 0 {
 		// runtime.Gosched()
-		for i := 0; i < 60000; i++ {
+		for i := 0; i < 70000; i++ {
 			fmt.Printf("p")
 		}
 	}
