@@ -30,13 +30,16 @@ type Quotient struct {
 // 第二步定义一个服务对象，这个服务对象可以很简单， 比如类型是int或者是interface{},重要的是它输出的方法。
 // 这里我们定义一个算术类型Arith，其实它是一个int类型，但是这个int的值我们在后面方法的实现中也没用到，所以它基本上就起一个辅助的作用。
 
-type Arith int
+type Arith struct {
+	setting int
+}
 
 func (t *Arith) Multiply(args *Args, reply *int) error {
 	*reply = args.A * args.B
 	return nil
 }
 func (t *Arith) Divide(args *Args, quo *Quotient) error {
+	fmt.Println("setting: ", t.setting)
 	if args.B == 0 {
 		return errors.New("divide by zero")
 	}
@@ -48,6 +51,7 @@ func (t *Arith) Divide(args *Args, quo *Quotient) error {
 // 实现RPC服务器:
 func main() {
 	var ms = new(Arith)
+	ms.setting = 10
 	rpc.Register(ms)
 	var address, _ = net.ResolveTCPAddr("tcp", "127.0.0.1:1234")
 	listener, err := net.ListenTCP("tcp", address)
