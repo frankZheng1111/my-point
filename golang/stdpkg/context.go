@@ -42,29 +42,39 @@ func main() {
 	// WithValue函数和取消Context无关，它是为了生成一个绑定了一个键值对数据的Context，这个绑定的数据可以通过Context.Value方法访问到，这是我们实际用经常要用到的技巧，一般我们想要通过上下文来传递数据时，可以通过这个方法，如我们需要tarce追踪系统调用栈的时候。
 	//
 	fmt.Println("Start show WithCancel & WithValue")
-	ctx, cancel := context.WithCancel(context.Background())
-	valueCtx := context.WithValue(ctx, key, "add value")
-
 	wg.Add(1)
 
+	ctx, cancel := context.WithCancel(context.Background())
+	valueCtx := context.WithValue(ctx, key, "add value")
 	go ContextWithCancelAndValue(valueCtx)
 	time.Sleep(2 * time.Second) // 2秒后取消
 	cancel()
 
 	wg.Wait()
 
-	fmt.Println("Start show WithTimeout(多少秒后超时)")
+	// WithDeadline函数，和WithCancel差不多，它会多传递一个截止时间参数，意味着到了这个时间点，会自动取消Context，当然我们也可以不等到这个时候，可以提前通过取消函数进行取消。
+	//
+	fmt.Println("Start show WithDeadline(哪一个时间点后超时)")
+	wg.Add(1)
 
+	deadline := time.Now().Add(3 * time.Second)
+	ctx, cancel = context.WithDeadline(context.Background(), deadline)
+	go ContextWithTimeoutAndDeadline(ctx)
+
+	wg.Wait()
+
+	// WithTimeout和WithDeadline基本上一样，这个表示是超时自动取消，是多少时间后自动取消Context的意思。
+	//
+	fmt.Println("Start show WithTimeout(多少秒后超时)")
 	wg.Add(1)
 
 	ctx, cancel = context.WithTimeout(context.Background(), 4*time.Second)
-
-	go ContextWithTimeout(ctx)
+	go ContextWithTimeoutAndDeadline(ctx)
 
 	wg.Wait()
 }
 
-func ContextWithTimeout(ctx context.Context) {
+func ContextWithTimeoutAndDeadline(ctx context.Context) {
 	defer wg.Done()
 	for {
 		select {
