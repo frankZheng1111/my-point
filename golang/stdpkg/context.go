@@ -11,6 +11,10 @@ golang在1.6.2的时候还没有自己的context，在1.7的版本中就把golan
 // 	Deadline() (deadline time.Time, ok bool)
 // 	Done() <-chan struct{}
 // 	Err() error
+//
+//   // Value方法获取该Context上绑定的值，是一个键值对
+//   // 所以要通过一个Key才可以获取对应的值，这个值一般是线程安全的。
+//   // 可以通过WithValue传递
 // 	Value(key interface{}) interface{}
 // }
 
@@ -26,34 +30,69 @@ golang在1.6.2的时候还没有自己的context，在1.7的版本中就把golan
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 )
 
-var key = "key"
+var key string = "key"
+var wg sync.WaitGroup
 
 func main() {
+	// WithCancel函数，传递一个父Context作为参数，返回子Context，以及一个取消函数用来取消Context。
+	// WithValue函数和取消Context无关，它是为了生成一个绑定了一个键值对数据的Context，这个绑定的数据可以通过Context.Value方法访问到，这是我们实际用经常要用到的技巧，一般我们想要通过上下文来传递数据时，可以通过这个方法，如我们需要tarce追踪系统调用栈的时候。
+	//
+	fmt.Println("Start show WithCancel & WithValue")
 	ctx, cancel := context.WithCancel(context.Background())
-
-	//通过 context.WithValue 来传值
 	valueCtx := context.WithValue(ctx, key, "add value")
-	go watch(valueCtx)
-	time.Sleep(10 * time.Second)
+
+	wg.Add(1)
+
+	go ContextWithCancelAndValue(valueCtx)
+	time.Sleep(2 * time.Second) // 2秒后取消
 	cancel()
-	time.Sleep(5 * time.Second)
+
+	wg.Wait()
+
+	fmt.Println("Start show WithTimeout(多少秒后超时)")
+
+	wg.Add(1)
+
+	ctx, cancel = context.WithTimeout(context.Background(), 4*time.Second)
+
+	go ContextWithTimeout(ctx)
+
+	wg.Wait()
 }
 
-func watch(ctx context.Context) {
+func ContextWithTimeout(ctx context.Context) {
+	defer wg.Done()
 	for {
 		select {
-		case err := <-ctx.Done():
+		case t := <-time.After(1 * time.Second):
+			fmt.Println("Doing some work ", t)
+
+			// we received the signal of cancelation in this channel
+		case <-ctx.Done():
+			fmt.Println(ctx.Err()) //o: context deadline exceeded
+			fmt.Println("Cancel the context ")
+			return
+		}
+	}
+}
+
+func ContextWithCancelAndValue(ctx context.Context) {
+	defer wg.Done()
+	for {
+		select {
+		case <-ctx.Done(): // struct{}
 			//get value
-			fmt.Println(ctx.Err(), err)
+			fmt.Println(ctx.Err()) // o: context canceled
 			fmt.Println(ctx.Value(key), "is cancel")
 			return
 		default:
 			//get value
 			fmt.Println(ctx.Value(key), "int goroutine")
-			time.Sleep(2 * time.Second)
+			time.Sleep(1 * time.Second)
 		}
 	}
 }
