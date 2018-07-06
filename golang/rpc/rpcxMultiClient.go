@@ -11,8 +11,12 @@ import (
 func main() {
 	flag.Parse()
 
-	d := client.NewMultipleServersDiscovery([]*client.KVPair{{Key: "tcp@localhost:8972"}, {Key: "tcp@localhost:8973"}})
-	xclient := client.NewXClient("Arith", client.Failtry, client.RandomSelect, d, client.DefaultOption)
+	d := client.NewMultipleServersDiscovery([]*client.KVPair{{Key: "tcp@localhost:8972"}, {Key: "tcp@localhost:8973", Value: "group=test"}})
+	// Discovery can find the group. Client can use `option.Group` to set group.
+	// If you have not set `option.Group`, clients can access any services whether services set group or not.
+	option := client.DefaultOption
+	// option.Group = "test" // will only access Arith2 after setting group
+	xclient := client.NewXClient("Arith", client.Failtry, client.RandomSelect, d, option)
 	defer xclient.Close()
 
 	args := &struct{ A, B int }{

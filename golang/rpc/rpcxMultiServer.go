@@ -42,7 +42,8 @@ func main() {
 
 	go func() {
 		server := server.NewServer()
-		server.RegisterName("Arith", new(Arith2), "")
+		// group is a meta data. If you set group metadata for some services, only clients in this group can access those services.
+		server.RegisterName("Arith", new(Arith2), "group=test")
 		server.Serve("tcp", "127.0.0.1:8973")
 	}()
 
