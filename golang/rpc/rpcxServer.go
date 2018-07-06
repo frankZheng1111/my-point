@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/smallnest/rpcx/server"
 	"github.com/smallnest/rpcx/share"
+	"time"
 )
 
 type Args struct {
@@ -29,6 +30,7 @@ func (t *Arith) PrintMetaData(ctx context.Context, args string, reply *string) e
 	fmt.Println("req.Meta: ", ctx.Value(share.ReqMetaDataKey).(map[string]string)["reqMeta"])
 	resMeta := ctx.Value(share.ResMetaDataKey).(map[string]string)
 	resMeta["resMeta"] = "FromServer"
+	time.Sleep(3 * time.Second)
 	return nil
 }
 

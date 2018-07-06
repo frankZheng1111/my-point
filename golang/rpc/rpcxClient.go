@@ -6,6 +6,7 @@ import (
 	"github.com/smallnest/rpcx/client"
 	"github.com/smallnest/rpcx/share"
 	"log"
+	"time"
 )
 
 var (
@@ -16,7 +17,11 @@ func main() {
 	flag.Parse()
 
 	d := client.NewPeer2PeerDiscovery("tcp@"+*addr, "")
-	xclient := client.NewXClient("Arith", client.Failtry, client.RandomSelect, d, client.DefaultOption)
+	option := client.DefaultOption
+	// option.ConnectTimeout = time.Second * 10 // 默认10s
+	// option.ReadTimeout = time.Second / 2 // ReadTimeout sets readdeadline for underlying net.Conns
+	// option.WriteTimeout = time.Second / 5 // WriteTimeout sets writedeadline for underlying net.Conns
+	xclient := client.NewXClient("Arith", client.Failtry, client.RandomSelect, d, option)
 	defer xclient.Close()
 
 	args := &struct{ A, B int }{
