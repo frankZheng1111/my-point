@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"flag"
-	"log"
-
 	"github.com/smallnest/rpcx/client"
+	"github.com/smallnest/rpcx/share"
+	"log"
 )
 
 var (
@@ -24,9 +24,19 @@ func main() {
 		B: 20,
 	}
 
+	var replyStr string
+	ctx := context.WithValue(context.Background(), share.ReqMetaDataKey, map[string]string{"reqMeta": "FromClient"})
+	ctx = context.WithValue(ctx, share.ResMetaDataKey, make(map[string]string))
+	err := xclient.Call(ctx, "PrintMetaData", "reqStr", &replyStr)
+	if err != nil {
+		log.Fatalf("failed to call: %v", err)
+	}
+
+	log.Printf("同步调用: PrintMetaData: reply: %s, metaData: %s \n", replyStr, ctx.Value(share.ResMetaDataKey).(map[string]string)["resMeta"])
+
 	// 同步调用
 	reply := &struct{ C int }{}
-	err := xclient.Call(context.Background(), "Mul", args, reply)
+	err = xclient.Call(context.Background(), "Mul", args, reply)
 	if err != nil {
 		log.Fatalf("failed to call: %v", err)
 	}
