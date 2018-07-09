@@ -61,7 +61,7 @@ func PkgFunctionSizeof() {
 	fmt.Println("sizeof bool type: ", BOOL_TYPE_SIZE)     // 1个字节
 	fmt.Println("sizeof int64 type: ", INT64_TYPE_SIZE)   // 8个字节
 	fmt.Println("sizeof string type: ", STRING_TYPE_SIZE) // 16个字节
-	fmt.Println("sizeof struct type: ", STRUCT_TYPE_SIZE) // 32个字节(不等与1+1+8+16因为有对齐量的关系)
+	fmt.Println("sizeof struct type: ", STRUCT_TYPE_SIZE) // 32个字节 = |x(byte)x(bool)------|xxxxxxxx(int64)|xxxxxxxx(str.ptr)|xxxxxxxx(str.len)|
 }
 
 // Alignof 函数返回对应参数的类型对齐所需要的倍数
