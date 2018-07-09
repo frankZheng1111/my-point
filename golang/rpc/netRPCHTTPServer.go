@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"log"
+	_ "net"
 	"net/http"
 	"net/rpc"
 	"time"
@@ -50,6 +51,17 @@ func main() {
 		log.Fatal("listen error:", e)
 	}
 
+	// l, e := net.Listen("tcp", ":1234")
+	// if e != nil {
+	// 	log.Fatal("listen error:", e)
+	// }
+	//
+	// log.Println("Serving RPC handler")
+	// err := http.Serve(l, nil) // 在此阻塞
+	// if err != nil {
+	// 	log.Fatalf("Error serving: %s", err)
+	// }
+	//
 	// // 自定义Server
 	// // func NewServer() *Server
 	// // NewServer returns a new Server.
