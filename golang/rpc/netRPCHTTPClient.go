@@ -11,6 +11,8 @@ type Quotient struct {
 }
 
 func main() {
+	// 自定义路径
+	// var client, err = rpc.DialHTTPPath("tcp", "127.0.0.1:1234", "rpc")
 	var client, err = rpc.DialHTTP("tcp", "127.0.0.1:1234")
 	if err != nil {
 		fmt.Println("连接不到服务器：", err)
