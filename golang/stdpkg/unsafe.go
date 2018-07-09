@@ -35,6 +35,10 @@ func PkgFunction() {
 	fmt.Println("sizeof int64 type: ", INT64_TYPE_SIZE) // 8个字节
 }
 
+// 类型Pointer * ArbitraryType
+// 这里，ArbitraryType不是一个真正的类型，它只是一个占位符。
+// type ArbitraryType int
+// ArbitraryType仅用于文档目的，实际上并不是不安全包的一部分。 它表示任意Go表达式的类型。
 func PointerAnduintptr() {
 	fmt.Println("\nRUN PointerAnduintptr;")
 	v1 := uint(12)
