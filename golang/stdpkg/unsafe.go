@@ -25,14 +25,63 @@ import (
 // func Offsetof（selector ArbitraryType）uintptr
 // func Sizeof（variable ArbitraryType）uintptr
 // （BTW，unsafe包中的函数中非唯一调用将在编译时求值。当传递给len和cap的参数是一个数组值时，内置函数和cap函数的调用也可以在编译时被求值。）
-func PkgFunction() {
-	fmt.Println("\nRUN PkgFunction;")
-	var boolean bool
-	var integer64 int64
-	const BOOL_TYPE_SIZE = unsafe.Sizeof(boolean)
-	const INT64_TYPE_SIZE = unsafe.Sizeof(integer64)
-	fmt.Println("sizeof bool type: ", BOOL_TYPE_SIZE)   // 1个字节
-	fmt.Println("sizeof int64 type: ", INT64_TYPE_SIZE) // 8个字节
+var data = struct {
+	onebyte   byte
+	boolean   bool
+	integer64 int64
+	str       string
+}{str: ""}
+
+var size12 = struct {
+	i8  int8
+	i32 int32
+	i16 int16
+}{}
+
+var size8 = struct {
+	i8  int8
+	i16 int16
+	i32 int32
+}{}
+
+func PkgFunctionSizeof() {
+	// bool 类型虽然只有一位，但也需要占用1个字节，因为计算机是以字节为单位
+	// 64为的机器，一个 int 占8个字节
+	// string 类型占16个字节，内部包含一个指向数据的指针（8个字节）和一个 int 的长度（8个字节）
+	// slice 类型占24个字节，内部包含一个指向数据的指针（8个字节）和一个 int 的长度（8个字节）和一个 int 的容量（8个字节）
+	// map 类型占8个字节，是一个指向 map 结构的指针
+	// 可以用 struct{} 表示空类型，这个类型不占用任何空间，用这个作为 map 的 value，可以讲 map 当做 set 来用
+	fmt.Println("\nRUN PkgFunctionSizeOf;")
+	const STRUCT_TYPE_SIZE = unsafe.Sizeof(data)
+	const BOOL_TYPE_SIZE = unsafe.Sizeof(data.boolean)
+	const BYTE_TYPE_SIZE = unsafe.Sizeof(data.onebyte)
+	const INT64_TYPE_SIZE = unsafe.Sizeof(data.integer64)
+	const STRING_TYPE_SIZE = unsafe.Sizeof(data.str)
+	fmt.Println("sizeof byte type: ", BYTE_TYPE_SIZE)     // 1个字节
+	fmt.Println("sizeof bool type: ", BOOL_TYPE_SIZE)     // 1个字节
+	fmt.Println("sizeof int64 type: ", INT64_TYPE_SIZE)   // 8个字节
+	fmt.Println("sizeof string type: ", STRING_TYPE_SIZE) // 16个字节
+	fmt.Println("sizeof struct type: ", STRUCT_TYPE_SIZE) // 32个字节(不等与1+1+8+16因为有对齐量的关系)
+}
+
+// Alignof 函数返回对应参数的类型对齐所需要的倍数
+// 什么是对齐: 结构体中的各个字段在内存中并不是紧凑排列的，而是按照字节对齐的，比如 int 占8个字节，那么就只能写在地址为8的倍数的地址处，至于为什么要字节对齐，主要是为了效率考虑
+// 在struct中，它的对齐值是它的成员中的最大对齐值。
+func PkgFunctionAlignof() {
+	fmt.Println("\nRUN PkgFunctionAlignOf;")
+	const STRUCT_TYPE_ALIGN = unsafe.Alignof(data)
+	const BOOL_TYPE_ALIGN = unsafe.Alignof(data.boolean)
+	const BYTE_TYPE_ALIGN = unsafe.Alignof(data.onebyte)
+	const INT64_TYPE_ALIGN = unsafe.Alignof(data.integer64)
+	const STRING_TYPE_ALIGN = unsafe.Alignof(data.str)
+	fmt.Println("alignof byte type: ", BYTE_TYPE_ALIGN)     // 1
+	fmt.Println("alignof bool type: ", BOOL_TYPE_ALIGN)     // 1
+	fmt.Println("alignof int64 type: ", INT64_TYPE_ALIGN)   // 8
+	fmt.Println("alignof string type: ", STRING_TYPE_ALIGN) // 8
+	fmt.Println("alignof struct type: ", STRUCT_TYPE_ALIGN) // 8
+
+	fmt.Println("size12 内存分布 int8|int32|int16 = x---|xxxx|xx--", unsafe.Sizeof(size12)) // 12
+	fmt.Println("size8 内存分布 int8|int16|int32 = x-xx|xxxx", unsafe.Sizeof(size8))        // 8
 }
 
 // 类型Pointer * ArbitraryType
@@ -60,6 +109,7 @@ func PointerAnduintptr() {
 }
 
 func main() {
-	PkgFunction()
+	PkgFunctionSizeof()
+	PkgFunctionAlignof()
 	PointerAnduintptr()
 }
