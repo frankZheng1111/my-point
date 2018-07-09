@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/rpc"
+	"time"
 )
 
 //http://colobu.com/2016/09/18/go-net-rpc-guide/
@@ -54,17 +55,30 @@ func main() {
 	var ms = new(Arith)
 	ms.setting = 10
 	rpc.Register(ms)
+	// func ResolveTCPAddr(net, addr string) (*TCPAddr, os.Error)获取一个TCPAddr
+	// 参数都是string类型，net是个const string,包括tcp4,tcp6,tcp一般使用tcp，兼容v4和v6，addr表示ip地址，包括端口号，如www.google.com:80之类的
 	var address, _ = net.ResolveTCPAddr("tcp", "127.0.0.1:1234")
+	// func ListenTCP(net string, laddr *TCPAddr) (l *TCPListener, err os.Error)用来监听端口
+	// net表示协议类型，laddr表示本机地址,是TCPAddr类型，注意，此处的laddr包括端口，返回一个*TCPListener类型或者错误
 	listener, err := net.ListenTCP("tcp", address)
 	if err != nil {
 		fmt.Println("启动失败！", err)
 	}
+	// 这种写法一次只能处理一个链接
+	//
 	for {
+		// func (l *TCPListener) Accept() (c Conn, err os.Error)用来等待下一个调用并返回一个通用的Conn(会阻塞住)。
+		// 进行后续操作，这是TCPListener的方法，一般TCPListener从上一个函数返回得来。
 		conn, err := listener.Accept()
 		if err != nil {
 			continue
 		}
 		fmt.Println("接收到一个调用请求...")
+		time.Sleep(10 * time.Second)
+		// ServeConn runs the DefaultServer on a single connection.
+		// ServeConn blocks, serving the connection until the client hangs up.
+		// The caller typically invokes ServeConn in a go statement.
+		// ServeConn uses the gob wire format (see package gob) on the connection. To use an alternate codec, use ServeCodec.
 		rpc.ServeConn(conn)
 	}
 	// time.Sleep(3600 * time.Second)
