@@ -58,6 +58,7 @@ func VisitStringLengthWithAddress() {
 	strData := unsafe.Pointer(uintptr(strUnsafePtr))
 	fmt.Println("string len by address =", *(*int)(len))         //string len by address = 6
 	fmt.Println("string data by address =", *(*[]byte)(strData)) //string data by address = [97 98 99 100 101 102 65 66 67 68 69 70]
+	fmt.Println(string([]byte{96}))                              // `
 
 	*(*int)(len) = 3
 	fmt.Println("string str =", str) // string str = abc
