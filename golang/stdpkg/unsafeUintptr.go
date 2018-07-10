@@ -48,6 +48,22 @@ func VisitSliceWithAddress() {
 	fmt.Println("slice a =", a) // slice a = [00 01 02 003]
 }
 
+func VisitStringLengthWithAddress() {
+	fmt.Println("\n Run VisitStringLengthWithAddress")
+	str := "abcdefABCDEF"
+	// 集合内的地址是连续的 故获取第n个元素的地址(头)后，加上m个地址长度, 则是可以获得第n
+	strUnsafePtr := unsafe.Pointer(&str)
+	// string 类型占16个字节，内部包含一个指向数据的指针（8个字节）和一个 int 的长度（8个字节）
+	len := unsafe.Pointer(uintptr(strUnsafePtr) + unsafe.Sizeof(str)/2)
+	strData := unsafe.Pointer(uintptr(strUnsafePtr))
+	fmt.Println("string len by address =", *(*int)(len))         //string len by address = 6
+	fmt.Println("string data by address =", *(*[]byte)(strData)) //string data by address = [97 98 99 100 101 102 65 66 67 68 69 70]
+
+	*(*int)(len) = 3
+	fmt.Println("string str =", str) // string str = abc
+}
+
 func main() {
 	VisitSliceWithAddress()
+	VisitStringLengthWithAddress()
 }
