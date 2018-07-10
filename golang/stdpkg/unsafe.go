@@ -25,6 +25,16 @@ import (
 // func Offsetof（selector ArbitraryType）uintptr
 // func Sizeof（variable ArbitraryType）uintptr
 // （BTW，unsafe包中的函数中非唯一调用将在编译时求值。当传递给len和cap的参数是一个数组值时，内置函数和cap函数的调用也可以在编译时被求值。）
+
+// 合法用例2: 调用sync/atomic包中指针相关的函数
+// sync / atomic包中的以下函数的大多数参数和结果类型都是unsafe.Pointer或*unsafe.Pointer：
+//
+// func CompareAndSwapPointer（addr * unsafe.Pointer，old，new unsafe.Pointer）（swapped bool）
+// func LoadPointer（addr * unsafe.Pointer）（val unsafe.Pointer）
+// func StorePointer（addr * unsafe.Pointer，val unsafe.Pointer）
+// func SwapPointer（addr * unsafe.Pointer，new unsafe.Pointer）（old unsafe.Pointer）
+// atomic包可以完成一些原子级操作比如对比后交换值之类的,个人理解就是相当于封装了锁操作，可能有性能上的优化
+
 var data = struct {
 	onebyte   byte
 	boolean   bool
