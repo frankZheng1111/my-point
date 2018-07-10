@@ -41,6 +41,7 @@ func VisitSliceWithAddress() {
 	a := [4]string{"00", "01", "02", "03"}
 	// 集合内的地址是连续的 故获取第n个元素的地址(头)后，加上m个地址长度, 则是可以获得第n
 	p1 := unsafe.Pointer(&a[1])
+	fmt.Println("sizeof uintptr: ", unsafe.Sizeof(uintptr(p1))) // sizeof uintptr:  8
 	p3 := unsafe.Pointer(uintptr(p1) + 2*unsafe.Sizeof(a[0]))
 
 	*(*string)(p3) = "003"
