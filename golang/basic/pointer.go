@@ -10,6 +10,8 @@ func main() {
 
 	fmt.Printf("a 变量的地址是: %x\n", &a)
 
+	// 指针无法直接运算
+	// ip = ip + 1 // panic: invalid operation: ip + 1 (mismatched types *int and int)
 	/* 指针变量的存储地址 */
 	fmt.Printf("ip 变量储存的指针地址: %x\n", ip)
 
