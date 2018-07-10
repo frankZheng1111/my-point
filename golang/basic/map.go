@@ -1,6 +1,52 @@
 package main
 
-// map 底层实现有指针指向相应的bucket，键值对存在bucket内，也就是赋值或传参后作响应修改会影响值的原因
+// https://www.jianshu.com/p/aa0d4808cbb8
+//https://juejin.im/entry/5a1e4bcd6fb9a045090942d8
+
+/*
+	map的底层实现
+	map 底层实现有指针指向相应的bucket，键值对存在bucket内，也就是赋值或传参后作响应修改会影响值的原因
+	指针指向如下的数据结构
+	type hmap struct {
+		count     int // # 元素个数
+		// 状态 表示四个状态在(在遍历新的buckets(0001b,1), 遍历旧的buckets(0010b,2), 正在写数据(0100b, 4), 正在扩容(1000b, 8)), 对应位为1时, 为触发状态
+		flags     uint8
+		B         uint8  // 说明包含2^B个bucket
+		noverflow uint16 // 溢出的bucket的个数
+		hash0     uint32 // hash种子
+
+		buckets    unsafe.Pointer // buckets的数组指针 指向一个对象是*bmap的数组
+		oldbuckets unsafe.Pointer // 结构扩容的时候用于复制的buckets数组
+		nevacuate  uintptr        // 搬迁进度（已经搬迁的buckets数量）
+
+		extra *mapextra
+	}
+
+	type mapextra struct {
+		overflow    *[]*bmap
+		oldoverflow *[]*bmap
+		nextOverflow *bmap
+	}
+
+	// tophash用于记录8个key哈希值的高8位，这样在寻找对应key的时候可以更快，不必每次都对key做全等判断。
+	// 后续依次按顺序了存储了8个key值8个value(之所以没有交错存储考虑到key，value类型长度不同, 考量到对齐的原因, 节省内存)
+	// 最后存了一个overflow指针, 再接下来是hash冲突发生时，下一个溢出桶的地址
+	type bmap struct {
+		tophash [bucketCnt]uint8
+	}
+
+	//几个比较重要的计算
+	hash := alg.hash(key, uintptr(h.hash0)) // 对应键值得hash值
+	top := uint8(hash >> (sys.PtrSize*8 - 8)) // 取高八位，即hash值右移(系统指针大小(字节) * 8(1byte=8bit) - 8流出的高八位)
+	bucketIndex := hash & (uintptr(1)<<h.B - 1)，即 hash % 2^B(假设有8个bucket,B=3,即对111b按位取与运算(结果范围0-7))
+
+	// map初始化
+	// 0. 校验几个参数是否符合要求
+	// 1. 根据具体情况设置一个合适的B, B为满足count(make传入的大小参数) >= bucketcnt(一个桶可以存储的键值对，这边是8) && count >= loadFactor(装载因子)
+	//   插入的元素个数/bucket个数达到某个阈值（当前设置为6.5) map会进行扩容
+	// bucketCnt为一个桶可以存储
+
+*/
 
 import (
 	"fmt"
