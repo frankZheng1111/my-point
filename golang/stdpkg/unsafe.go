@@ -51,7 +51,7 @@ func PkgFunctionSizeof() {
 	// slice 类型占24个字节，内部包含一个指向数据的指针（8个字节）和一个 int 的长度（8个字节）和一个 int 的容量（8个字节）
 	// map 类型占8个字节，是一个指向 map 结构的指针
 	// 可以用 struct{} 表示空类型，这个类型不占用任何空间，用这个作为 map 的 value，可以讲 map 当做 set 来用
-	fmt.Println("\nRUN PkgFunctionSizeOf;")
+	fmt.Println("\nRUN PkgFunctionSizeof;")
 	const STRUCT_TYPE_SIZE = unsafe.Sizeof(data)
 	const BOOL_TYPE_SIZE = unsafe.Sizeof(data.boolean)
 	const BYTE_TYPE_SIZE = unsafe.Sizeof(data.onebyte)
@@ -68,7 +68,7 @@ func PkgFunctionSizeof() {
 // 什么是对齐: 结构体中的各个字段在内存中并不是紧凑排列的，而是按照字节对齐的，比如 int 占8个字节，那么就只能写在地址为8的倍数的地址处，至于为什么要字节对齐，主要是为了效率考虑
 // 在struct中，它的对齐值是它的成员中的最大对齐值。
 func PkgFunctionAlignof() {
-	fmt.Println("\nRUN PkgFunctionAlignOf;")
+	fmt.Println("\nRUN PkgFunctionAlignof;")
 	const STRUCT_TYPE_ALIGN = unsafe.Alignof(data)
 	const BOOL_TYPE_ALIGN = unsafe.Alignof(data.boolean)
 	const BYTE_TYPE_ALIGN = unsafe.Alignof(data.onebyte)
@@ -82,6 +82,31 @@ func PkgFunctionAlignof() {
 
 	fmt.Println("size12 内存分布 int8|int32|int16 = x---|xxxx|xx--", unsafe.Sizeof(size12)) // 12
 	fmt.Println("size8 内存分布 int8|int16|int32 = x-xx|xxxx", unsafe.Sizeof(size8))        // 8
+}
+
+// unsafe.Offsetof 函數的參數必鬚是一個字段 x.f, 然後返迴 f 字段相對於 x 起始地址的偏移量, 包括可能的空洞.
+// unsafe.Offsetof 函数的参数必须是一个结构体的字段，然后返回该字段相对于该结构体起始地址的偏移量
+func PkgFunctionOffestof() {
+	fmt.Println("\nRUN PkgFunctionOffsetof;")
+	const BOOL_TYPE_OFFSET = unsafe.Offsetof(data.boolean)
+	const BYTE_TYPE_OFFSET = unsafe.Offsetof(data.onebyte)
+	const INT64_TYPE_OFFSET = unsafe.Offsetof(data.integer64)
+	const STRING_TYPE_OFFEST = unsafe.Offsetof(data.str)
+	fmt.Println("Offsetof byte type: ", BYTE_TYPE_OFFSET)     // 0
+	fmt.Println("Offsetof bool type: ", BOOL_TYPE_OFFSET)     // 1
+	fmt.Println("Offsetof int64 type: ", INT64_TYPE_OFFSET)   // 8
+	fmt.Println("Offsetof string type: ", STRING_TYPE_OFFEST) // 16
+	fmt.Println("size12 内存分布 int8|int32|int16 = x---|xxxx|xx--",
+		unsafe.Offsetof(size12.i8),  //0
+		unsafe.Offsetof(size12.i32), //4
+		unsafe.Offsetof(size12.i16), //8
+	)
+	fmt.Println("size8 内存分布 int8|int16|int32 = x-xx|xxxx",
+		unsafe.Offsetof(size8.i8),  //0
+		unsafe.Offsetof(size8.i16), //2
+		unsafe.Offsetof(size8.i32), //4
+	) // 8
+
 }
 
 // 类型Pointer * ArbitraryType
@@ -111,5 +136,6 @@ func PointerAnduintptr() {
 func main() {
 	PkgFunctionSizeof()
 	PkgFunctionAlignof()
+	PkgFunctionOffestof()
 	PointerAnduintptr()
 }
