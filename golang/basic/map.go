@@ -2,7 +2,10 @@ package main
 
 // map 底层实现有指针指向相应的bucket，键值对存在bucket内，也就是赋值或传参后作响应修改会影响值的原因
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 func main() {
 	var a map[string]int
@@ -25,6 +28,12 @@ func main() {
 	countryCapitalMap["Italy"] = "Rome"
 	countryCapitalMap["Japan"] = "Tokyo"
 	countryCapitalMap["India"] = "New Delhi"
+
+	anotherMap := countryCapitalMap
+	anotherMap["anotherCity"] = "anotherCaptial"
+	// map 类型占8个字节，是一个指向 map 结构的指针
+	// 故所有的操作会映射到原值
+	fmt.Println(reflect.DeepEqual(countryCapitalMap, anotherMap)) // true
 
 	/* 使用 key 输出 map 值 */
 	for country := range countryCapitalMap {
