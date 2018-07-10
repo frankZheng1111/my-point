@@ -14,6 +14,14 @@ import (
 // 如果unsafe.Pointer变量仍然有效，则由unsafe.Pointer变量表示的地址处的数据不会被GC回收。
 // unsafe.Pointer是一个通用的指针类型，就像* int等。
 
+// 关于指针类型转换
+//对于将 T1转换为unsafe.Pointer，然后转换为 T2，unsafe包docs说：
+
+// 如果T2比T1大，并且两者共享等效内存布局，则该转换允许将一种类型的数据重新解释为另一类型的数据。
+// 这种“等效内存布局”的定义是有一些模糊的。 看起来go团队故意如此。 这使得使用unsafe包更危险。
+//
+// 由于Go团队不愿意在这里做出准确的定义，本文也不尝试这样做。
+
 // 核心
 // 由于uintptr是一个整数类型，uintptr值可以进行算术运算。 所以通过使用uintptr和unsafe.Pointer，我们可以绕过限制，* T值不能在Golang中计算偏移量：
 
