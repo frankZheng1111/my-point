@@ -32,17 +32,14 @@ var data = struct {
 	str       string
 }{str: "data-string"}
 
-var size12 = struct {
-	i8  int8
-	i32 int32
-	i16 int16
-}{}
+func VisitStructFieldWithAddress() {
+	// 通过地址操作可以访问到私有成员
+	fmt.Println("\n Run VisitStructFieldWithAddress //通过地址操作可以访问到私有成员")
+	dataUnsafePtr := unsafe.Pointer(&data)
+	newAddr := unsafe.Pointer(uintptr(dataUnsafePtr) + 16)
 
-var size8 = struct {
-	i8  int8
-	i16 int16
-	i32 int32
-}{}
+	fmt.Println("struct.str=", *(*string)(newAddr)) // slice a = [00 01 02 003]
+}
 
 func VisitSliceWithAddress() {
 	fmt.Println("\n Run VisitSliceWithAddress")
@@ -75,4 +72,5 @@ func VisitStringLengthWithAddress() {
 func main() {
 	VisitSliceWithAddress()
 	VisitStringLengthWithAddress()
+	VisitStructFieldWithAddress()
 }
