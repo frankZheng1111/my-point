@@ -17,7 +17,7 @@ package main
 
 		buckets    unsafe.Pointer // buckets的数组指针 指向一个对象是*bmap的数组
 		oldbuckets unsafe.Pointer // 结构扩容的时候用于复制的buckets数组
-		nevacuate  uintptr        // 搬迁进度（已经搬迁的buckets数量）
+		nevacuate  uintptr        // 搬迁进度（小于nevacuate的已经搬迁）
 
 		extra *mapextra
 	}
@@ -54,8 +54,39 @@ package main
 	// 1. 根据key计算hash值
 	// 2. hash值通过位运算根据桶的数量取模值计算为桶的索引
 	// 3. 判断oldbuckets指针是否存在，存在的话表示在旧桶内查找
-	// 4. 通过桶的索引确定在哪一个bucket中查找，bucket最后有overflow指针指向的溢出桶，形成链表够，遍历链表(with 先遍历当前桶的tophash，若hash值的高八位相同, 判断对应位置的key是否相同，相同则返回，否则继续查询)，直到结束为止。
+	// 4. 通过桶的索引确定在哪一个bucket中查找，bucket最后有overflow指针指向的溢出桶，形成链表结构，遍历链表(with 先遍历当前桶的tophash，若hash值的高八位相同, 判断对应位置的key是否相同，相同则返回，否则继续查询)，直到结束为止。
 
+	// map分配值:
+	// 0. flag(按位或计算)设置为当前是写状态
+	// 0-again: 判断是否正在扩容(即oldbuckets中是否有内容), 若是，迁移1至2个pair
+	// 1. 根据key计算hash值
+	// 2. hash值通过位运算根据桶的数量取模值计算为桶的索引
+	// 3. 通过桶的索引确定在哪一个bucket中查找，bucket最后有overflow指针指向的溢出桶，形成链表结构，遍历链表(
+					with 先遍历当前桶的tophash，若当前桶的tophash中有空位, 先保留该空位
+				)，直到结束为止。若期间找到已存在的key(先比对hash高八位, 再比对对应的key值是否精确相等), 若相等, 则更新对应值, 直接跳到最后一步
+  // 4  若当前未在扩容, 若超出装载因子，直接扩容，若仅溢出桶数量大于桶的数量，设置oldbuckets为当前bucket, 若没有超出限制且未找到空位，创建一个溢出桶, 跳至again
+	// 5. 键值对写入保留下的空位
+	// 5. flag(按位与或计算)解除为当前是写状态
+
+	// map删除值
+	// 基本流程等同于给分配值, 改为移除对应的tophash(设为empty), 故内存并没有减少
+
+	// map扩容
+	// 每次扩容后桶的数量是当前的2倍
+	// oldbuckets = buckets
+	// extra: oldoverflow=overflow
+	// B(+1)后, rehash的情况下 若 hash & (2^B) == 0，说明 hash < 2^B，那么它将落入与旧桶集合相同的索引位置中；
+	// 否则，它将落入原先位置 + 2^B中。
+	//
+	// 总结
+	// map是由数组+链表实现的HashTable，其大小和B息息相关
+	// Golang通过hashtop快速试错加快了查找过程，利用空间换时间的思想解决了扩容的问题(增量迁移)
+	//
+	//   随着元素的增加，在一个bucket链中寻找特定的key会变得效率低下，所以在插入的元素个数/bucket个数达到某个阈值（当前设置为6.5，实验得来的值）时，map会进行扩容，代码中详见 hashGrow函数。首先创建bucket数组，长度为原长度的两倍，然后替换原有的bucket，原有的bucket被移动到oldbucket指针下。
+	// 扩容完成后，每个hash对应两个bucket（一个新的一个旧的）。oldbucket不会立即被转移到新的bucket下，而是当访问到该bucket时，会调用growWork方法进行迁移，growWork方法会将oldbucket下的元素rehash到新的bucket中。随着访问的进行，所有oldbucket会被逐渐移动到bucket中。
+  //
+	// 但是这里有个问题：如果需要进行扩容的时候，上一次扩容后的迁移还没结束，怎么办？在代码中我们可以看到很多”again”标记，会不断进行迁移，知道迁移完成后才会进行下一次扩容。
+	// 利用将8个key(8个value)依次放置减少了padding空间等等。
 */
 
 import (
