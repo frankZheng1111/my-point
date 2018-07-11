@@ -50,6 +50,12 @@ package main
 	// 3. 申请hmap的空间
 	// 4. 初始化hmap(赋值buckets, B, hash0(随机数), 其他为默认初值)
 
+	// map访问值:
+	// 1. 根据key计算hash值
+	// 2. hash值通过位运算根据桶的数量取模值计算为桶的索引
+	// 3. 判断oldbuckets指针是否存在，存在的话表示在旧桶内查找
+	// 4. 通过桶的索引确定在哪一个bucket中查找，bucket最后有overflow指针指向的溢出桶，形成链表够，遍历链表(with 先遍历当前桶的tophash，若hash值的高八位相同, 判断对应位置的key是否相同，相同则返回，否则继续查询)，直到结束为止。
+
 */
 
 import (
