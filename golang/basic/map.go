@@ -42,9 +42,13 @@ package main
 
 	// map初始化
 	// 0. 校验几个参数是否符合要求
-	// 1. 根据具体情况设置一个合适的B, B为满足count(make传入的大小参数) >= bucketcnt(一个桶可以存储的键值对，这边是8) && count >= loadFactor(装载因子)
-	//   插入的元素个数/bucket个数达到某个阈值（当前设置为6.5) map会进行扩容
-	// bucketCnt为一个桶可以存储
+	// 1. 根据具体情况设置一个合适的B, B为满足count >= bucketcnt && count/B(当前值) >= loadFactor的最大值
+	//   插入的(元素个数/bucket)个数达到某个阈值（当前设置为6.5) map会进行扩容
+	//   bucketCnt为一个桶可以存储多少个键值对
+	//   count 为make传入参数的大小
+	// 2. 申请buckets的空间
+	// 3. 申请hmap的空间
+	// 4. 初始化hmap(赋值buckets, B, hash0(随机数), 其他为默认初值)
 
 */
 
