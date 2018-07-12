@@ -11,9 +11,16 @@ type ByteSize float64
 // 只能是数字、字符（符文）、字符串或布尔值。由于编译时的限制， 定义它们的表达式必须
 // 也是可被编译器求值的常量表达式。例如 1<<3 就是一个常量表达式，而
 // math.Sin(math.Pi/4) 则不是，因为对 math.Sin 的函数调用在运行时才会发生。
+
+// 2、每次 const 出现时，都会让 iota 初始化为0.
+// const a = iota // a=0
+// const (
+// 	b = iota //b=0
+// 	c        //c=1
+// )
 const (
 	// 通过赋予空白标识符忽略第一个值
-	_           = iota // ignore first value by assigning to blank identifier
+	I           = iota // ignore first value by assigning to blank identifier
 	KB ByteSize = 1 << (10 * iota)
 	MB
 	GB
@@ -55,6 +62,6 @@ func init() {
 
 func main() {
 	fmt.Println("Start main func")
-	fmt.Println(MB, GB, TB, PB, EB)
+	fmt.Println(KB, MB, GB, TB, PB, EB)
 	fmt.Println(home, user, gopath)
 }
