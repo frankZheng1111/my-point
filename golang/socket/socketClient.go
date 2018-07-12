@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"net"
 	"os"
 	"time"
@@ -9,7 +10,10 @@ import (
 
 func sender(conn net.Conn) {
 	defer conn.Close()
-	words := "hello world!"
+	randSrc := rand.NewSource(time.Now().UnixNano())
+	rand := rand.New(randSrc)
+	words := fmt.Sprintf("%d: hello world!", rand.Intn(100))
+	fmt.Println("My send out words: ", words)
 	time.Sleep(time.Second * 4)
 	buffer := make([]byte, 2048)
 	conn.Write([]byte(words))
@@ -37,15 +41,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	// https://golang.org/pkg/net/#DialTCP
-	// 类似于拨号建立连接
-	//
-	conn, err := net.DialTCP("tcp", nil, tcpAddr)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
-		os.Exit(1)
-	}
+	for {
+		// https://golang.org/pkg/net/#DialTCP
+		// 类似于拨号建立连接
+		//
+		go func() {
+			conn, err := net.DialTCP("tcp", nil, tcpAddr)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Fatal error: %s", err.Error())
+				os.Exit(1)
+			}
 
-	fmt.Println("connect success")
-	sender(conn)
+			fmt.Println("connect success")
+			sender(conn)
+		}()
+		time.Sleep(1 * time.Second)
+	}
 }

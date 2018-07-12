@@ -15,18 +15,19 @@ func main() {
 	CheckError(err)
 	defer netListen.Close()
 
-	Log("Waiting for clients")
 	for {
 
-		// Step2: Accept
+		Log("Waiting for new client")
+		// Step2: Accept, 客户端拨号前会阻塞在此
 		//
 		conn, err := netListen.Accept()
 		if err != nil {
 			continue
 		}
-
-		Log(conn.RemoteAddr().String(), " tcp connect success")
-		handleConnection(conn)
+		go func() {
+			Log(conn.RemoteAddr().String(), " tcp connect success")
+			handleConnection(conn)
+		}()
 	}
 }
 
@@ -34,15 +35,15 @@ func main() {
 //
 func handleConnection(conn net.Conn) {
 
-	buffer := make([]byte, 12) // 大小取决于一次能读的长度
-	defer conn.Close()         // 仅能关闭打开的连接
+	// buffer := make([]byte, 12) // 大小取决于一次能读的长度
+	buffer := make([]byte, 2048)
+	defer conn.Close() // 仅能关闭打开的连接
 
 	for {
 		// Step3: ReadBuffer, 会在此阻塞
 		//
-		fmt.Println("Wait to read content...")
+		Log("Wait to read content...")
 		n, err := conn.Read(buffer) // 根据buffer的长度读出指定的内容，读完后阻塞
-		conn.Write([]byte("I got it"))
 
 		if err != nil {
 			// 若客户端断开连接(包括不限于客户端调用conn.Close(), 客户端进程停止)
@@ -50,6 +51,7 @@ func handleConnection(conn net.Conn) {
 			Log(conn.RemoteAddr().String(), " connection error: ", err)
 			return
 		}
+		conn.Write([]byte("Resp about " + string(buffer[:n]) + "I got it"))
 
 		Log(conn.RemoteAddr().String(), "receive data string:\n", string(buffer[:n]))
 
