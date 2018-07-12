@@ -74,7 +74,7 @@ func PkgFunctionSizeof() {
 	fmt.Println("sizeof struct type: ", STRUCT_TYPE_SIZE) // 32个字节 = |x(byte)x(bool)------|xxxxxxxx(int64)|xxxxxxxx(str.ptr)|xxxxxxxx(str.len)|
 }
 
-// Alignof 函数返回对应参数的类型对齐所需要的倍数
+// Alignof 函数返回对应参数的类型对齐所需要的"倍数"
 // 什么是对齐: 结构体中的各个字段在内存中并不是紧凑排列的，而是按照字节对齐的，比如 int 占8个字节，那么就只能写在地址为8的倍数的地址处，至于为什么要字节对齐，主要是为了效率考虑
 // 在struct中，它的对齐值是它的成员中的最大对齐值。
 func PkgFunctionAlignof() {
