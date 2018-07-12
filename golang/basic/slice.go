@@ -10,7 +10,7 @@ func main() {
 	fmt.Println(nilSlice == nil) //true
 	// fmt.Println(len(nil))        // panic: use of untyped nil
 	fmt.Println(len(nilSlice), cap(nilSlice)) // 0, 0
-	nilSlice = append(nilSlice, 1)
+	nilSlice = append(nilSlice, 1)            // 不会panic
 	fmt.Println(len(nilSlice), cap(nilSlice)) // 1, 1
 	// makeSlice := make([]int)//  panic: missing len argument to make([]int)
 	makeSlice := make([]int, 1)
