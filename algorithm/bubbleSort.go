@@ -1,7 +1,7 @@
 package main
 
 // 基础的冒泡排序可优化的点
-// 2018程序员小灰: 什么是冒泡排序
+// 2018chengxuyuanxiaohui: 什么是冒泡排序
 
 import (
 	"fmt"
