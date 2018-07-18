@@ -60,6 +60,7 @@ func PkgFunctionSizeof() {
 	// string 类型占16个字节，内部包含一个指向数据的指针（8个字节）和一个 int 的长度（8个字节）
 	// slice 类型占24个字节，内部包含一个指向数据的指针（8个字节）和一个 int 的长度（8个字节）和一个 int 的容量（8个字节）
 	// map 类型占8个字节，是一个指向 map 结构的指针
+	// chan 类型占4个字节
 	// 可以用 struct{} 表示空类型，这个类型不占用任何空间，用这个作为 map 的 value，可以讲 map 当做 set 来用
 	fmt.Println("\nRUN PkgFunctionSizeof;")
 	const STRUCT_TYPE_SIZE = unsafe.Sizeof(data)
