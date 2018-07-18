@@ -1,3 +1,4 @@
+// go run -tags zookeeper rpcxZookeeperServer.go
 package main
 
 import (

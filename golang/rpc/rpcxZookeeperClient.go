@@ -1,3 +1,4 @@
+// go run -tags zookeeper rpcxZookeeperClient.go
 package main
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/smallnest/rpcx/client"
 	"github.com/smallnest/rpcx/share"
 	"log"
+	// "time"
 )
 
 var (
@@ -25,6 +27,10 @@ func main() {
 		A: 10,
 		B: 20,
 	}
+
+	// zookeeper 不影响调用
+	// log.Println("====================")
+	// time.Sleep(15 * time.Second)
 
 	var replyStr string
 	ctx := context.WithValue(context.Background(), share.ReqMetaDataKey, map[string]string{"reqMeta": "FromClient"})
