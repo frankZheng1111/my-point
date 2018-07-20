@@ -28,7 +28,7 @@ func MinBiggerChangedNumber(num int) (int, error) {
 	for ; num >= i; i *= 10 {
 		beforeNum = (num / (i / 10)) % 10 // 当前位前一位
 		currentNum = (num / i) % 10       // 当前位
-		insertNums(&rightNums, beforeNum)
+		rightNums = append(rightNums, beforeNum)
 		if currentNum < beforeNum {
 			hasUpSort = true
 			break
@@ -41,8 +41,7 @@ func MinBiggerChangedNumber(num int) (int, error) {
 	for index, val := range rightNums {
 		if val > currentNum {
 			changedNum = val
-			rightNums := append(rightNums[:index], rightNums[index+1:]...)
-			insertNums(&rightNums, currentNum)
+			rightNums[index] = currentNum
 			break
 		}
 	}
@@ -52,35 +51,6 @@ func MinBiggerChangedNumber(num int) (int, error) {
 		result += rightNums[j] * i
 	}
 	return result, nil
-}
-
-// 升序插入
-func insertNums(nums *[]int, num int) {
-	sortedNums := (*nums)
-	if len(sortedNums) == 0 {
-		*nums = []int{num}
-		return
-	}
-	if len(sortedNums) == 1 {
-		if sortedNums[0] > num {
-			*nums = []int{num, sortedNums[0]}
-		} else {
-			*nums = []int{sortedNums[0], num}
-		}
-		return
-	}
-	for i := 0; i < len(sortedNums); i++ {
-		if i == len(sortedNums)-1 {
-			sortedNums = append(sortedNums, num)
-			break
-		} else if num > sortedNums[i] && num <= sortedNums[i+1] {
-			sortedNums = append(sortedNums[:i+1], num)
-			sortedNums = append(sortedNums, sortedNums[i+1:]...)
-			break
-		}
-	}
-	*nums = sortedNums
-	return
 }
 
 func main() {
