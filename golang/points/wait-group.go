@@ -19,6 +19,7 @@ func main() {
 	for i := 0; i < 10; i++ {
 		go func() {
 			// 一旦一个Once对象的Do方法被调用，那么接下来对该Once对象Do方法的调用都将不会执行。
+			// 这边的函数必须没有参数
 			once.Do(onceFunc)
 			fmt.Println("i: ", i)
 			wg.Done()
