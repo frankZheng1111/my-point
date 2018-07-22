@@ -11,6 +11,7 @@ import (
 import (
 	"fmt"
 	"os"
+	"runtime"
 )
 
 var (
@@ -27,35 +28,53 @@ type Pool interface {
 	Shutdown() error             // 关闭池
 }
 
-type closerWithDeadLine struct {
-	closer io.Closer
-	dl     time.Time
-}
-
 type GenericPool struct {
 	sync.Mutex
-	pool        chan closerWithDeadLine
-	maxOpen     int  // 池中最大资源数
-	numOpen     int  // 当前池中资源数
-	minOpen     int  // 池中最少资源数
-	closed      bool // 池是否已关闭
-	maxLifetime time.Duration
-	factory     factory // 创建连接的方法
+	pool    chan io.Closer
+	hbChan  chan struct{}
+	maxOpen int     // 池中最大资源数
+	numOpen int     // 当前池中资源数
+	minOpen int     // 池中最少资源数
+	closed  bool    // 池是否已关闭
+	factory factory // 创建连接的方法
 }
 
-func NewGenericPool(minOpen, maxOpen int, factory factory, maxLifetime time.Duration) (*GenericPool, error) {
+func (p *GenericPool) HeartBeatCloserHandle() {
+	for {
+		select {
+		case _ = <-p.hbChan:
+			continue
+		case _ = <-time.After(1 * time.Second):
+			if p.numOpen > p.minOpen {
+				select {
+				case closer := <-p.pool:
+					p.Close(closer)
+					continue
+				default:
+					continue
+				}
+				continue
+			}
+		}
+	}
+}
+
+func (p *GenericPool) HeartBeat() {
+	p.hbChan <- struct{}{}
+}
+
+func NewGenericPool(minOpen, maxOpen int, factory factory) (*GenericPool, error) {
 	if maxOpen <= 0 || minOpen > maxOpen {
 		return nil, ErrInvalidConfig
 	}
 	// 初始化池结构
 	p := &GenericPool{
-		maxOpen:     maxOpen,
-		minOpen:     minOpen,
-		factory:     factory,
-		maxLifetime: maxLifetime,
-		pool:        make(chan closerWithDeadLine, maxOpen),
+		maxOpen: maxOpen,
+		minOpen: minOpen,
+		factory: factory,
+		pool:    make(chan io.Closer, maxOpen),
+		hbChan:  make(chan struct{}),
 	}
-	deadLine := time.Now().Add(p.maxLifetime)
 	// 建立最小连接数
 	for i := 0; i < minOpen; i++ {
 		closer, err := factory()
@@ -63,12 +82,14 @@ func NewGenericPool(minOpen, maxOpen int, factory factory, maxLifetime time.Dura
 			continue
 		}
 		p.numOpen++
-		p.pool <- closerWithDeadLine{closer: closer, dl: deadLine}
+		p.pool <- closer
 	}
+	go p.HeartBeatCloserHandle()
 	return p, nil
 }
 
 func (p *GenericPool) Acquire() (io.Closer, error) {
+	p.HeartBeat()
 	if p.closed {
 		return nil, ErrPoolClosed
 	}
@@ -82,41 +103,34 @@ func (p *GenericPool) Acquire() (io.Closer, error) {
 }
 
 func (p *GenericPool) getOrCreate() (io.Closer, error) {
-	for {
-		select {
-		case c := <-p.pool:
-			if p.numOpen > p.minOpen && time.Now().After(c.dl) {
-				p.Close(c.closer)
-				continue
-			}
-			return c.closer, nil
-		default:
-			p.Lock()
-			// 超出连接上限后, 等待池中有连接被归还
-			if p.numOpen >= p.maxOpen {
-				c := <-p.pool
-				p.Unlock()
-				return c.closer, nil
-			}
-			// 新建连接
-			closer, err := p.factory()
-			if err != nil {
-				p.Unlock()
-				return nil, err
-			}
-			p.numOpen++
-			p.Unlock()
+	select {
+	case closer := <-p.pool:
+		return closer, nil
+	default:
+		p.Lock()
+		defer p.Unlock()
+		// 超出连接上限后, 等待池中有连接被归还
+		if p.numOpen >= p.maxOpen {
+			closer := <-p.pool
 			return closer, nil
 		}
+		// 新建连接
+		closer, err := p.factory()
+		if err != nil {
+			return nil, err
+		}
+		p.numOpen++
+		return closer, nil
 	}
 }
 
 // 释放单个资源到连接池
 func (p *GenericPool) Release(closer io.Closer) error {
+	p.HeartBeat()
 	if p.closed {
 		return ErrPoolClosed
 	}
-	p.pool <- closerWithDeadLine{closer: closer, dl: time.Now().Add(p.maxLifetime)}
+	p.pool <- closer
 	return nil
 }
 
@@ -136,8 +150,8 @@ func (p *GenericPool) Shutdown() error {
 	}
 	p.Lock()
 	close(p.pool)
-	for c := range p.pool {
-		c.closer.Close()
+	for closer := range p.pool {
+		closer.Close()
 		p.numOpen--
 	}
 	p.closed = true
@@ -153,7 +167,8 @@ func OpenFile() (io.Closer, error) {
 }
 
 func main() {
-	pool, _ := NewGenericPool(3, 8, OpenFile, 20*time.Second)
+	runtime.GOMAXPROCS(1)
+	pool, _ := NewGenericPool(3, 8, OpenFile)
 	wg := sync.WaitGroup{}
 	length := 10
 	for i := 0; i < length; i++ {
@@ -162,10 +177,14 @@ func main() {
 		go func(i int) {
 			file, _ := pool.Acquire()
 			fmt.Println("Open file ", i+1, " times: ", file, " numsOpen in pool: ", pool.numOpen)
-			time.Sleep(10 * time.Second)
+			time.Sleep(time.Duration(length-i) * time.Second)
 			pool.Release(file)
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
+	for i := 0; i < 10; i++ {
+		time.Sleep(time.Second)
+		fmt.Printf("current numOpen %d\r", pool.numOpen)
+	}
 }
