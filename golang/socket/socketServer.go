@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
+	"time"
 )
 
 func main() {
@@ -14,21 +16,31 @@ func main() {
 	netListen, err := net.Listen("tcp", "localhost:1024")
 	CheckError(err)
 	defer netListen.Close()
+	ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(5*time.Second))
 
-	for {
-
-		Log("Waiting for new client")
-		// Step2: Accept, 客户端拨号前会阻塞在此
-		//
-		conn, err := netListen.Accept()
-		if err != nil {
-			continue
+	go func() {
+		for {
+			Log("Waiting for new client")
+			// Step2: Accept, 客户端拨号前会阻塞在此
+			//
+			conn, err := netListen.Accept()
+			ctx, _ = context.WithDeadline(context.Background(), time.Now().Add(5*time.Second))
+			if err != nil {
+				continue
+			}
+			go func() {
+				Log(conn.RemoteAddr().String(), " tcp connect success")
+				handleConnection(conn)
+			}()
 		}
-		go func() {
-			Log(conn.RemoteAddr().String(), " tcp connect success")
-			handleConnection(conn)
-		}()
-	}
+	}()
+
+	// 在context被结束前保持监听
+	// select {
+	// case <-ctx.Done():
+	// 	Log("Waiting for new client too long")
+	// 	os.Exit(1)
+	// }
 }
 
 //处理连接
