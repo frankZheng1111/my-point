@@ -5,19 +5,25 @@ import (
 	"math/rand"
 	"net"
 	"os"
+	"sync"
 	"time"
 )
+
+var wg sync.WaitGroup
 
 func sender(conn net.Conn) {
 	defer conn.Close()
 	randSrc := rand.NewSource(time.Now().UnixNano())
 	rand := rand.New(randSrc)
 	words := fmt.Sprintf("%d: hello world!", rand.Intn(100))
-	fmt.Println("My send out words: ", words)
-	time.Sleep(time.Second * 4)
+	time.Sleep(time.Second * 3) //
 	buffer := make([]byte, 2048)
+	fmt.Println("My send out words: ", words)
 	conn.Write([]byte(words))
 	fmt.Println("send over")
+	// time.Sleep(time.Second * 6) // 超过5 server 端会关闭连接
+	conn.Write([]byte(words))
+	fmt.Println("send over again")
 
 	// ReadBuffer, 会在此阻塞
 	n, err := conn.Read(buffer)
@@ -26,7 +32,7 @@ func sender(conn net.Conn) {
 	}
 
 	fmt.Println(conn.RemoteAddr().String(), "receive data string:\n", string(buffer[:n]))
-	time.Sleep(time.Second * 5)
+	wg.Done()
 }
 
 func main() {
@@ -41,7 +47,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	for {
+	wg.Add(5)
+	for i := 0; i < 5; i++ {
 		// https://golang.org/pkg/net/#DialTCP
 		// 类似于拨号建立连接
 		//
@@ -57,4 +64,5 @@ func main() {
 		}()
 		time.Sleep(1 * time.Second)
 	}
+	wg.Wait()
 }

@@ -18,7 +18,7 @@ func main() {
 	defer netListen.Close()
 	ctx, _ := context.WithDeadline(context.Background(), time.Now().Add(5*time.Second))
 
-	go func() {
+	func() {
 		for {
 			Log("Waiting for new client")
 			// Step2: Accept, 客户端拨号前会阻塞在此
@@ -50,26 +50,43 @@ func handleConnection(conn net.Conn) {
 	// buffer := make([]byte, 12) // 大小取决于一次能读的长度
 	buffer := make([]byte, 2048)
 	defer conn.Close() // 仅能关闭打开的连接
+	hbChan := make(chan struct{})
 
 	for {
 		// Step3: ReadBuffer, 会在此阻塞
 		//
 		Log("Wait to read content...")
+		go HeartBeatHandle(conn, hbChan)
 		n, err := conn.Read(buffer) // 根据buffer的长度读出指定的内容，读完后阻塞
 
 		if err != nil {
 			// 若客户端断开连接(包括不限于客户端调用conn.Close(), 客户端进程停止)
 			// 则err: EOF
-			Log(conn.RemoteAddr().String(), " connection error: ", err)
+			Log(conn.RemoteAddr().String(), " connection error: ", err, " break!")
 			return
 		}
+		hbChan <- struct{}{}
 		conn.Write([]byte("Resp about " + string(buffer[:n]) + "I got it"))
 
 		Log(conn.RemoteAddr().String(), "receive data string:\n", string(buffer[:n]))
 
 	}
-
 }
+
+func HeartBeatHandle(conn net.Conn, hbChan chan struct{}) {
+	select {
+	case <-hbChan:
+		Log("HeartBeat!")
+		break
+	case <-time.After(5 * time.Second):
+		Log("It's really weird to get Nothing, now Close Conn!!!")
+		err := conn.Close()
+		if err != nil {
+			Log(err)
+		}
+	}
+}
+
 func Log(v ...interface{}) {
 	log.Println(v...)
 }
