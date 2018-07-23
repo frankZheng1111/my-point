@@ -94,7 +94,16 @@ import (
 	"reflect"
 )
 
+type CustomMap map[string]string
+
+func (cm *CustomMap) Print() {
+	fmt.Println(cm)
+}
+
 func main() {
+	cm := make(CustomMap)
+	cm.Print()
+
 	var a map[string]int
 	a = make(map[string]int)
 	a["test"]++
@@ -108,7 +117,7 @@ func main() {
 	// countryCapitalMap = map[string]string{} // 可以
 	// countryCapitalMap = *new(map[string]string) //不行, new会分配初值，依旧是nil
 
-	fmt.Println(countryCapitalMap, countryCapitalMap == nil, *tmp) // map[] false
+	fmt.Println(countryCapitalMap, countryCapitalMap == nil) // map[] false
 
 	/* map 插入 key-value 对，各个国家对应的首都 */
 	countryCapitalMap["France"] = "Paris"
@@ -126,6 +135,10 @@ func main() {
 	for country := range countryCapitalMap {
 		fmt.Println("Capital of", country, "is", countryCapitalMap[country])
 	}
+
+	// panic: cannot take the address of countryCapitalMap["France"]
+	// 原因：map可能会随着元素的增多重新分配更大的内存空间，旧值都会拷贝到新的内存空间，因此之前的地址就会失效。
+	_ = &countryCapitalMap["France"]
 
 	/* 查看元素在集合中是否存在 */
 	captial, ok := countryCapitalMap["United States"]
