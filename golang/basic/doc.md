@@ -41,7 +41,7 @@
  
   2. 对同一个package中不同文件是按文件名字符串比较“从小到大”顺序调用各文件中的init()函数,对于
  
-  3. 对不同的package，如果不相互依赖的话，按照main包中"先import的后调用"的顺序调用其包中的init()
+  3. 对不同的package，如果不相互依赖的话，按照main包中"先import的先调用"的顺序调用其包中的init()
  
-  4. 如果package存在依赖，则先调用最早被依赖的package中的init()
+  4. 如果package存在依赖，则先调用最早被依赖的package中的init(), 即最底层的init
 

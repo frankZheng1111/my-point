@@ -108,7 +108,7 @@ func main() {
 	// countryCapitalMap = map[string]string{} // 可以
 	// countryCapitalMap = *new(map[string]string) //不行, new会分配初值，依旧是nil
 
-	fmt.Println(countryCapitalMap, countryCapitalMap == nil) // map[] false
+	fmt.Println(countryCapitalMap, countryCapitalMap == nil, *tmp) // map[] false
 
 	/* map 插入 key-value 对，各个国家对应的首都 */
 	countryCapitalMap["France"] = "Paris"

@@ -14,12 +14,14 @@ func HeapSort(values []int) {
 	}
 }
 
+// 仅将一个最大值放在堆顶
 func buildHeap(values []int) {
 	for i := len(values) - 1; i >= 0; i-- { //////一定得从后往前调整，
 		HeapPercolateUp(values, i)
 	}
 }
 
+// 将最大值放在index的位置
 func HeapPercolateUp(values []int, index int) {
 	iMax := index
 	length := len(values)
