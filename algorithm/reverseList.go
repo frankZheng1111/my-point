@@ -93,6 +93,34 @@ func printList(head *ListNode) {
 	fmt.Println("")
 }
 
+func QuickSortList(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+	var tmpFunc func(head, sn, en *ListNode)
+	tmpFunc = func(head, sn, en *ListNode) {
+		if sn == nil || sn == en || sn.Next == nil || sn.Next == en {
+			return
+		}
+		pn := sn
+		pVal := pn.Val
+		maxPtr := sn.Next
+		for maxPtr != en {
+			if maxPtr.Val <= pVal {
+				pn = pn.Next
+				pn.Val, maxPtr.Val = maxPtr.Val, pn.Val
+			}
+			maxPtr = maxPtr.Next
+		}
+		pn.Val, sn.Val = sn.Val, pn.Val
+		tmpFunc(head, sn, pn)
+		tmpFunc(head, pn.Next, en)
+		return
+	}
+	tmpFunc(head, head, nil)
+	return head
+}
+
 func main() {
 	node0 := ListNode{5, nil}
 	node1 := ListNode{4, &node0}
@@ -105,8 +133,10 @@ func main() {
 	reverseHead := *reverseListIteratively(&head)
 	printList(&reverseHead)
 	fmt.Println("翻转后(递归翻转):")
-	reReverseHead := reverseListRecursively(&reverseHead)
-	printList(reReverseHead)
+	// reReverseHead := reverseListRecursively(&reverseHead)
+	// printList(reReverseHead)
+	fmt.Println("链表快排:")
+	printList(QuickSortList(&reverseHead))
 	fmt.Println("对折链表:")
 	printList(FoldList(&head))
 }
