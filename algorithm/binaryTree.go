@@ -10,6 +10,27 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
+func BinaryTreePreOrder2(node *TreeNode) []*TreeNode {
+	var nodes []*TreeNode = []*TreeNode{}
+	var stack []*TreeNode = []*TreeNode{}
+	for len(stack) > 0 || node != nil {
+		if node == nil {
+			return nodes
+		}
+		nodes = append(nodes, node)
+		if node.Left != nil {
+			stack = append(stack, node)
+			node = node.Left
+		} else if node.Right != nil {
+			node = node.Right
+			continue
+		}
+		node = stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+	}
+	return nodes
+}
+
 // 先序遍历二叉树
 //
 func BinaryTreePreOrder(node *TreeNode) []*TreeNode {
@@ -113,7 +134,7 @@ func main() {
 		},
 	}
 	fmt.Println("原二叉树(先序遍历): ")
-	preOrderNodes := BinaryTreePreOrder(node)
+	preOrderNodes := BinaryTreePreOrder2(node)
 	fmt.Println("")
 	fmt.Println("原二叉树(中序遍历): ")
 	LDRNodes := BinaryTreeLDR(node)
