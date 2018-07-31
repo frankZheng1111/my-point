@@ -107,6 +107,7 @@ func QuickSortList(head *ListNode) *ListNode {
 		maxPtr := sn.Next
 		for maxPtr != en {
 			if maxPtr.Val <= pVal {
+				// 核心将基准值保留在第一位, 左指针之前(不包括左指针)的节点为较小的部分, 右边的数为较大的部分, 每次交换将较小的数与较大部分的左边界换到后方，最后将较小的右边界与基准值互换
 				pn = pn.Next
 				pn.Val, maxPtr.Val = maxPtr.Val, pn.Val
 			}
