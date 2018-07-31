@@ -12,21 +12,29 @@ type TreeNode struct {
 
 func BinaryTreePreOrder2(node *TreeNode) []*TreeNode {
 	var nodes []*TreeNode = []*TreeNode{}
-	var stack []*TreeNode = []*TreeNode{}
-	for len(stack) > 0 || node != nil {
-		if node == nil {
-			return nodes
+	var leftStack []*TreeNode = []*TreeNode{}
+	var rightStack []*TreeNode = []*TreeNode{}
+	n := node
+	for n != nil {
+		nodes = append(nodes, n)
+		fmt.Printf("%d ", n.Val)
+		if n.Left != nil {
+			leftStack = append(leftStack, n.Left)
 		}
-		nodes = append(nodes, node)
-		if node.Left != nil {
-			stack = append(stack, node)
-			node = node.Left
-		} else if node.Right != nil {
-			node = node.Right
+		if n.Right != nil {
+			rightStack = append(rightStack, n.Right)
+		}
+		if len(leftStack) > 0 {
+			n = leftStack[len(leftStack)-1]
+			leftStack = leftStack[:len(leftStack)-1]
 			continue
 		}
-		node = stack[len(stack)-1]
-		stack = stack[:len(stack)-1]
+		if len(rightStack) > 0 {
+			n = rightStack[len(rightStack)-1]
+			rightStack = rightStack[:len(rightStack)-1]
+			continue
+		}
+		break
 	}
 	return nodes
 }
